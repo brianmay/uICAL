@@ -49,13 +49,12 @@ namespace uICAL {
             bool operator == (const DateTime& dt) const;
 
             TZ_ptr tz;
+            EpochTime epochtime;
 
         protected:
             void construct(const string& datetime, const TZMap_ptr& tzmap);
             void construct(const DateStamp& ds, const TZ_ptr& tz);
             void assert_awareness(const DateTime& other) const;
-
-            EpochTime epochtime;
     };
 
     ostream& operator << (ostream& out, const DateTime::Day& day);
