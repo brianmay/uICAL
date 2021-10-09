@@ -25,6 +25,15 @@ namespace uICAL {
             string line;
             if(line.readfrom(this->ical, '\n')) {
                 line.rtrim();
+                while (true) {
+                    char next = this->ical.peek();
+                    string line2;
+                    if (next != 0x20 && next != 0x09) break;
+                    this->ical.get();
+                    if (!line2.readfrom(this->ical, '\n')) break;
+                    line2.rtrim();
+                    line = line + line2;
+                }
                 this->currentLine = new_ptr<VLine>(line);
             }
             else {
