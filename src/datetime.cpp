@@ -149,6 +149,19 @@ namespace uICAL {
         this->tz->str(out);
     }
 
+    String DateTime::format(string format) const {
+        const time_t secs = this->epochtime.epochSeconds;
+        const struct tm time = *gmtime(&secs);
+        char buffer[64];
+        strftime(buffer, 64, format.c_str(), &time);
+        String result = buffer;
+        return result;
+    }
+
+    dhms_t DateTime::convert_to_dhms() const {
+        return to_dhms(this->epochtime.epochSeconds);
+    }
+
     unsigned DateTime::daysUntil(DateTime::Day today, DateTime::Day then) {
         return ((int)today <= (int)then ? 0 : 7) + (int)then - (int)today;
     }

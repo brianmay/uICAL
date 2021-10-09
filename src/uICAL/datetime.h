@@ -6,6 +6,7 @@
 
 #include "uICAL/base.h"
 #include "uICAL/epochtime.h"
+#include "uICAL/datecalc.h"
 
 namespace uICAL {
     class DateStamp;
@@ -23,6 +24,8 @@ namespace uICAL {
             DateTime(const DateTime&) = default;
 
             void str(ostream& out) const;
+            String format(string format) const;
+            dhms_t convert_to_dhms() const;
 
             bool valid() const;
 
