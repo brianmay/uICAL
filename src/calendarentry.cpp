@@ -8,15 +8,17 @@
 
 
 namespace uICAL {
-    CalendarEntry::CalendarEntry(Type type, const string& summary, const DateTime& start) {
+    CalendarEntry::CalendarEntry(Type type, const string& summary, const string& location, const DateTime& start) {
         this->_type = type;
         this->_summary = summary;
+        this->_location = location;
         this->_start = start;
     }
 
-    CalendarEntry::CalendarEntry(Type type, const string& summary, const DateTime& start, const DatePeriod& span) {
+    CalendarEntry::CalendarEntry(Type type, const string& summary, const string& location, const DateTime& start, const DatePeriod& span) {
         this->_type = type;
         this->_summary = summary;
+        this->_location = location;
         this->_start = start;
         this->_span = span;
     }
@@ -37,6 +39,10 @@ namespace uICAL {
 
     const string CalendarEntry::summary() const {
         return this->_summary;
+    }
+
+    const string CalendarEntry::location() const {
+        return this->_location;
     }
 
     DateTime CalendarEntry::start() const {

@@ -17,6 +17,7 @@ namespace uICAL {
             void str(ostream& out) const;
 
             string summary;
+            string location;
             DateTime start;
             DateTime end;
             RRule_ptr rrule;

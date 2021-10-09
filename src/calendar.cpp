@@ -50,6 +50,7 @@ namespace uICAL {
             else if (parent == "VEVENT") {
                 if (line.empty()) return true;
                 if (line == "SUMMARY") return true;
+                if (line == "LOCATION") return true;
                 if (line == "DTSTAMP") return true;
                 if (line == "DTSTART") return true;
                 if (line == "DTEND") return true;

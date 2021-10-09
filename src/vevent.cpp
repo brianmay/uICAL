@@ -17,11 +17,18 @@ namespace uICAL {
         VLine_ptr dtEnd = obj->getPropertyByName("DTEND");
         VLine_ptr rRule = obj->getPropertyByName("RRULE");
         VLine_ptr summary = obj->getPropertyByName("SUMMARY");
+        VLine_ptr location = obj->getPropertyByName("LOCATION");
 
         this->start = DateTime(dtStart->value + dtStart->getParam("TZID"), tzmap);
         this->end = DateTime(dtEnd->value + dtStart->getParam("TZID"), tzmap);
 
         this->summary = summary->value;
+
+        if (location != nullptr) {
+            this->location = location->value;
+        } else {
+            this->location = String("");
+        }
 
         if (rRule != nullptr) {
             this->rrule = new_ptr<RRule>(rRule->value, this->start);
