@@ -23,7 +23,11 @@ namespace uICAL {
 
         this->summary = summary->value;
 
-        this->rrule = new_ptr<RRule>(rRule->value, this->start);
+        if (rRule != nullptr) {
+            this->rrule = new_ptr<RRule>(rRule->value, this->start);
+        } else {
+            this->rrule = new_ptr<RRule>(String(""), this->start);
+        }
     }
 
     void VEvent::str(ostream& out) const {
