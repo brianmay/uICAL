@@ -14,7 +14,7 @@ namespace uICAL {
             string name;
             std::map<string, string> params;
             string value;
-            string getParam(const string& key);
+            string getParam(const string& key) const;
 
             void str(ostream& out) const;
 

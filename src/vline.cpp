@@ -37,7 +37,7 @@ namespace uICAL {
         this->value.replace("\\;", ";");
     }
 
-    string VLine::getParam(const string& key) {
+    string VLine::getParam(const string& key) const {
         for (auto param : this->params) {
             if (param.first == key) {
                 return param.second;
