@@ -8,19 +8,14 @@
 
 
 namespace uICAL {
-    CalendarEntry::CalendarEntry(Type type, const string& summary, const string& location, const DateTime& start) {
+    CalendarEntry::CalendarEntry(Type type, const string& summary, const string& location, const DateTime& start, bool start_has_time, const DateTime& end, bool end_has_time) {
         this->_type = type;
         this->_summary = summary;
         this->_location = location;
         this->_start = start;
-    }
-
-    CalendarEntry::CalendarEntry(Type type, const string& summary, const string& location, const DateTime& start, const DatePeriod& span) {
-        this->_type = type;
-        this->_summary = summary;
-        this->_location = location;
-        this->_start = start;
-        this->_span = span;
+        this->_end = end;
+        this->start_has_time = start_has_time;
+        this->end_has_time = end_has_time;
     }
 
     CalendarEntry::Type CalendarEntry::type() const {
@@ -50,12 +45,12 @@ namespace uICAL {
     }
 
     DateTime CalendarEntry::end() const {
-        return this->_start + this->_span;
+        return this->_end;
     }
 
     void CalendarEntry::str(ostream& out) const {
         out << "Calendar " << this->asString(this->_type) << ": " << this->_summary << uICAL::endl;
         out << " - start: " << this->_start << uICAL::endl;
-        out << " - span: " << this->_span << uICAL::endl;
+        out << " - span: " << this->_end << uICAL::endl;
     }
 }

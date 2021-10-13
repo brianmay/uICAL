@@ -39,11 +39,15 @@ namespace uICAL {
     }
 
     CalendarEntry_ptr VEventIter::entry() const {
+        DatePeriod span = this->ice->end - this->ice->start;
+        DateTime end = this->rrule->now() + span;
         return new_ptr<CalendarEntry>(CalendarEntry::Type::EVENT,
                      this->ice->summary,
                      this->ice->location,
                      this->rrule->now(),
-                     this->ice->end - this->ice->start);
+                     this->ice->start_has_time,
+                     end,
+                     this->ice->end_has_time);
     }
 
     bool operator < (const VEventIter_ptr& a, const VEventIter_ptr& b) {

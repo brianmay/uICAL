@@ -9,6 +9,8 @@
 #include "uICAL/epochtime.h"
 #include "uICAL/datestamp.h"
 #include "uICAL/dateperiod.h"
+#include "uICAL/date.h"
+#include "uICAL/time.h"
 #include "uICAL/tz.h"
 #include "uICAL/tzmap.h"
 
@@ -36,6 +38,14 @@ namespace uICAL {
 
     DateTime::DateTime(seconds_t epochSeconds, const TZ_ptr& tz) {
         this->epochtime = EpochTime(epochSeconds);
+        this->tz = tz;
+    }
+
+    DateTime::DateTime(const Date& date, const Time& time, const TZ_ptr& tz) {
+        this->epochtime = EpochTime(
+            date.year, date.month, date.day, time.hour, time.minute, time.second,
+            tz
+        );
         this->tz = tz;
     }
 
@@ -84,6 +94,9 @@ namespace uICAL {
             std::get<3>(ymdhms), std::get<4>(ymdhms), std::get<5>(ymdhms)
         );
     }
+
+    Date DateTime::date() const { return Date(*this); };
+    Time DateTime::time() const { return Time(*this); };
 
     DateTime& DateTime::operator = (const DateTime& other) {
         this->tz = other.tz;

@@ -21,6 +21,8 @@ namespace uICAL {
             DateTime start;
             DateTime end;
             RRule_ptr rrule;
+            bool start_has_time;
+            bool end_has_time;
 
             friend class VEventIter;
     };

@@ -13,6 +13,9 @@ namespace uICAL {
     class DatePeriod;
     class TZ;
 
+    struct Date;
+    struct Time;
+
     class DateTime : public Base {
         public:
             DateTime();
@@ -22,6 +25,7 @@ namespace uICAL {
             DateTime(seconds_t epochSeconds);
             DateTime(seconds_t epochSeconds, const TZ_ptr& tz);
             DateTime(const DateTime&) = default;
+            DateTime(const Date& date, const Time& time, const TZ_ptr& tz);
 
             void str(ostream& out) const;
             String format(string format) const;
@@ -31,6 +35,8 @@ namespace uICAL {
 
             DateStamp datestamp() const;
             DateStamp datestamp(const TZ_ptr& tz) const;
+            Date date() const;
+            Time time() const;
 
             enum class Day {
                 NONE, MON, TUE, WED, THU, FRI, SAT, SUN
