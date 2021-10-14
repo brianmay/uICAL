@@ -345,20 +345,24 @@ namespace uICAL {
                 }
                 this->cascade->add(ByAndCounter::init(andCounters));
                 this->cascade->add(extraCounters);
-            }
-            else {
+            } else if (this->rr->byYearDay.size()) {
                 if (this->rr->byYearDay.size()) {
                     this->cascade->add(ByYearDayCounter::init(this->rr->byYearDay));
                 }
-                if (this->rr->byMonthDay.size()) {
-                    this->cascade->add(ByMonthDayCounter::init(this->rr->byMonthDay));
-                }
+            } else if (this->rr->byWeekNo.size()) {
                 if (this->rr->byWeekNo.size()) {
                     this->cascade->add(ByWeekNoCounter::init(this->rr->byWeekNo));
                 }
-                if (this->rr->byMonth.size()) {
+            } else {
+                if (this->rr->byMonthDay.size()) {
+                    this->cascade->add(ByMonthDayCounter::init(this->rr->byMonthDay));
+                } else {
                     this->cascade->add(ByMonthDayCounter::init(base.day));
+                }
+                if (this->rr->byMonth.size()) {
                     this->cascade->add(ByMonthCounter::init(this->rr->byMonth));
+                } else {
+                    this->cascade->add(ByMonthCounter::init(base.month));
                 }
             }
 
