@@ -16,7 +16,7 @@
 
 namespace uICAL {
     DateTime::DateTime() {
-        this->epochtime = EpochTime(0);
+        this->epochtime = EpochTime();
         this->tz = tz_unaware;
     }
 

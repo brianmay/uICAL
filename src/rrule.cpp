@@ -159,7 +159,7 @@ namespace uICAL {
             case Freq::DAILY:     return "DAILY";
             case Freq::WEEKLY:    return "WEELKY";
             case Freq::MONTHLY:   return "MONTHLY";
-            case Freq::YEARLY:    return "WEEKLY";
+            case Freq::YEARLY:    return "YEARLY";
             default:
                 string err("Unknown frequency index: ");
                 err += (int)freq;
