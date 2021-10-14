@@ -12,7 +12,7 @@ namespace uICAL {
     class EpochTime : public Base {
         public:
             EpochTime();
-            EpochTime(unsigned year, unsigned month, unsigned day, unsigned hour, unsigned minute, unsigned second, const TZ_ptr& tz);
+            EpochTime(unsigned year, unsigned month, unsigned day, unsigned hour, unsigned minute, unsigned second, const TZ_ptr tz);
             EpochTime(seconds_t seconds);
 
             using ymd_t = std::tuple<unsigned, unsigned, unsigned>;

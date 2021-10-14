@@ -1,6 +1,3 @@
-/*############################################################################
-# Copyright (c) 2020 Source Simian  :  https://github.com/sourcesimian/uICAL #
-############################################################################*/
 #ifndef uical_date_h
 #define uical_date_h
 
@@ -10,9 +7,12 @@
 #include "uICAL/epochtime.h"
 
 namespace uICAL {
+    using days_t = seconds_t;
+
     class Date : public Base {
         public:
             Date();
+            Date(days_t index);
             Date(const string& date);
             Date(unsigned year, unsigned month, unsigned day);
             Date(const DateTime& datetime);
@@ -51,9 +51,14 @@ namespace uICAL {
             bool operator != (const Date& ds) const;
 
             unsigned operator - (const Date& other) const;
+            Date operator + (const int days) const;
+
+            DateTime start_of_day(TZ_ptr tz) const;
+
+            String format(string format) const;
 
         protected:
-            seconds_t index() const;
+            days_t index() const;
             void validate() const;
             DateTime::Day getWeekDay(unsigned days) const;
     };

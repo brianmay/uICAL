@@ -116,7 +116,7 @@ namespace uICAL {
     }
 
     seconds_t DateStamp::index() const {
-        return EpochTime(this->year, this->month, this->day, this->hour, this->minute, this->second, TZ::unaware()).epochSeconds;
+        return EpochTime(this->year, this->month, this->day, this->hour, this->minute, this->second, tz_unaware).epochSeconds;
     }
 
     void DateStamp::str(ostream& out) const {

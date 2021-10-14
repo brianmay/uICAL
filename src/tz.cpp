@@ -10,59 +10,36 @@
 #include "uICAL/tzmap.h"
 
 namespace uICAL {
-    static TZ_ptr UNDEF = new_ptr<TZ>();
-    static TZ_ptr UNAWARE = new_ptr<TZ>(false);
-
-    TZ_ptr TZ::undef() {
-        return UNDEF;
-    }
-
-    TZ_ptr TZ::unaware() {
-        return UNAWARE;
-    }
-
-    TZ::TZ() {
-        this->offsetMins = -1;
-        this->aware = false;
-    }
-
-    TZ::TZ(bool aware) {
-        this->offsetMins = 0;
-        this->aware = aware;
-    }
-
-    TZ::TZ(int offsetMins) {
-        this->offsetMins = offsetMins;
-        this->aware = true;
-    }
-
-    TZ::TZ(const string& tz) {
-        this->offsetMins = TZ::parseOffset(tz);
-        this->aware = true;
-    }
-
-    TZ::TZ(const string& tz, const TZMap_ptr& tzmap)
-    : idmap(tzmap)
-    {
-        string id = this->idmap->findId(tz);
-        if (!id.empty()) {
-            this->id = id;
-            this->aware = true;
-        }
-        else {
-            this->offsetMins = TZ::parseOffset(tz);
-            this->aware = true;
-        }
-    }
+    const TZ_ptr tz_unaware = new_ptr<UnawareTZ>();
+    const TZ_ptr tz_UTC = new_ptr<OffsetTZ>(0);
 
     bool TZ::is_aware() const {
-        return this->aware;
+        return true;
     }
 
-    int TZ::parseOffset(const string& tz) {
-        if (tz == "Z") {
-            return 0;
-        }
+    UnawareTZ::UnawareTZ() {
+    }
+
+    seconds_t UnawareTZ::toUTC(seconds_t timestamp) const {
+        return timestamp;
+    }
+    seconds_t UnawareTZ::fromUTC(seconds_t timestamp) const {
+        return timestamp;
+    }
+
+    void UnawareTZ::str(ostream& out) const {
+        out << "unaware";
+    }
+
+    OffsetTZ::OffsetTZ(int offsetMins) {
+        this->offsetMins = offsetMins;
+    }
+
+    OffsetTZ::OffsetTZ(const string& tz) {
+        this->offsetMins = OffsetTZ::parseOffset(tz);
+    }
+
+    int OffsetTZ::parseOffset(const string& tz) {
         try {
             if (tz.length() == 5) {
                 char sign;
@@ -87,7 +64,7 @@ namespace uICAL {
         throw ValueError("Bad timezone: \"" + tz + "\"");
     }
 
-    void TZ::offsetAsString(ostream& out, int offsetMins) {
+    void OffsetTZ::offsetAsString(ostream& out, int offsetMins) {
         if (offsetMins != -1) {
             if (offsetMins == 0) {
                 out << "Z";
@@ -108,33 +85,23 @@ namespace uICAL {
         }
     }
 
-    int TZ::offset() const {
-        if (!this->id.empty()) {
-            return this->idmap->getOffset(this->id);
-        }
+    int OffsetTZ::offset() const {
         if (this->offsetMins == -1)
             throw ImplementationError("Timezone not defined");
         return this->offsetMins;
     }
 
-    seconds_t TZ::toUTC(seconds_t timestamp) const {
+    seconds_t OffsetTZ::toUTC(seconds_t timestamp) const {
         return timestamp - (this->offset() * 60);
     }
 
-    seconds_t TZ::fromUTC(seconds_t timestamp) const {
+    seconds_t OffsetTZ::fromUTC(seconds_t timestamp) const {
         return timestamp + (this->offset() * 60);
     }
 
-    void TZ::str(ostream& out) const {
-        if (!this->id.empty()) {
-            out << this->idmap->getName(this->id);
-            return;
-        }
-
+    void OffsetTZ::str(ostream& out) const {
         if (this->offsetMins == -1)
             throw ImplementationError("Timezone not defined");
-        if (!this->aware)
-            return;
-        TZ::offsetAsString(out, this->offsetMins);
+        OffsetTZ::offsetAsString(out, this->offsetMins);
     }
 }

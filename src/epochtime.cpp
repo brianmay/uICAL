@@ -14,7 +14,7 @@ namespace uICAL {
         this->epochSeconds = NaN;
     }
 
-    EpochTime::EpochTime(unsigned year, unsigned month, unsigned day, unsigned hour, unsigned minute, unsigned second, const TZ_ptr& tz) {
+    EpochTime::EpochTime(unsigned year, unsigned month, unsigned day, unsigned hour, unsigned minute, unsigned second, const TZ_ptr tz) {
         auto epochDays = days_from_civil(year, month, day);
         this->epochSeconds = tz->toUTC(to_seconds(epochDays, hour, minute, second));
     }

@@ -7,6 +7,7 @@
 #include "uICAL/util.h"
 #include "uICAL/logging.h"
 #include "uICAL/rrule.h"
+#include "uICAL/tzmap.h"
 
 namespace uICAL {
     RRule::RRule(const string& rrule, const DateTime& dtstart)
@@ -129,7 +130,9 @@ namespace uICAL {
     }
 
     DateTime RRule::parseDate(const string& value) const {
-        return DateTime(value);
+        // This value must be a date or a UTC datetime.
+        // FIXME: We should support a date only value.
+        return DateTime(value, new_ptr<TZMap>());
     }
 
     const char* RRule::dayAsString(DateTime::Day day) const {

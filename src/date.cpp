@@ -6,13 +6,23 @@
 #include "uICAL/error.h"
 #include "uICAL/datecalc.h"
 #include "uICAL/date.h"
+#include "uICAL/time.h"
 #include "uICAL/tz.h"
 
 namespace uICAL {
     Date::Date() {
-        this->year = 0;
-        this->month = 0;
-        this->day = 0;
+        this->year = 1970;
+        this->month = 1;
+        this->day = 1;
+        this->validate();
+    }
+
+    Date::Date(days_t days) {
+        std::tuple<unsigned, unsigned, unsigned> ymd = civil_from_days(days);
+        this->year = std::get<0>(ymd);
+        this->month = std::get<1>(ymd);
+        this->day = std::get<2>(ymd);
+        this->validate();
     }
 
     Date::Date(const string& date) {
@@ -43,7 +53,7 @@ namespace uICAL {
     }
 
     Date::Date(const DateTime& datetime) {
-        EpochTime::ymdhms_t ymdhms = datetime.epochtime.ymdhms(TZ::unaware());
+        EpochTime::ymdhms_t ymdhms = datetime.epochtime.ymdhms(datetime.tz);
         this->year = std::get<0>(ymdhms);
         this->month = std::get<1>(ymdhms);
         this->day = std::get<2>(ymdhms);
@@ -103,8 +113,17 @@ namespace uICAL {
         return this->index() - other.index();
     }
 
-    seconds_t Date::index() const {
-        return EpochTime(this->year, this->month, this->day, 0, 0, 0, TZ::unaware()).epochSeconds / (24 * 60 * 60);
+    Date Date::operator + (const int days) const {
+        return Date(this->index() + days);
+    }
+
+    DateTime Date::start_of_day(TZ_ptr tz) const {
+        return DateTime(*this, uICAL::Time(0, 0, 0), tz);
+    }
+
+
+    days_t Date::index() const {
+        return days_from_civil(this->year, this->month, this->day);
     }
 
     void Date::str(ostream& out) const {
@@ -243,5 +262,10 @@ namespace uICAL {
 
     void Date::incYear(unsigned n) {
         this->year += n;
+    }
+
+    String Date::format(string format) const {
+        DateTime datetime = this->start_of_day(tz_unaware);
+        return datetime.format(format);
     }
 }

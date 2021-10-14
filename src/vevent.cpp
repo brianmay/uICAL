@@ -24,8 +24,7 @@ namespace uICAL {
             has_time = false;
             Date date(vline.value);
             Time time(0, 0, 0);
-            TZ tz("Z");
-            return DateTime(date, time, std::make_shared<TZ>(tz));
+            return DateTime(date, time, tz_UTC);
         } else {
             throw ValueError(string("Bad VALUE: \"") + value + "\"");
         }
@@ -62,5 +61,6 @@ namespace uICAL {
         out << " - end: " << this->end << uICAL::endl;
         out << " - rrule: " << this->rrule << uICAL::endl;
     }
+
 
 }

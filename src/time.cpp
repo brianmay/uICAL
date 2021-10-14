@@ -42,6 +42,14 @@ namespace uICAL {
         this->validate();
     }
 
+    Time::Time(const DateTime& datetime) {
+        EpochTime::ymdhms_t ymdhms = datetime.epochtime.ymdhms(datetime.tz);
+        this->hour = std::get<3>(ymdhms);
+        this->minute = std::get<4>(ymdhms);
+        this->second = std::get<5>(ymdhms);
+        this->validate();
+    }
+
     void Time::validate() const {
         ostream m;
         for (;;) {

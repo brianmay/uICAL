@@ -1,6 +1,3 @@
-/*############################################################################
-# Copyright (c) 2020 Source Simian  :  https://github.com/sourcesimian/uICAL #
-############################################################################*/
 #ifndef uical_time_h
 #define uical_time_h
 

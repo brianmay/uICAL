@@ -7,6 +7,8 @@
 #include "uICAL/base.h"
 #include "uICAL/epochtime.h"
 #include "uICAL/datecalc.h"
+#include "uICAL/tz.h"
+#include "uICAL/types.h"
 
 namespace uICAL {
     class DateStamp;
@@ -19,13 +21,12 @@ namespace uICAL {
     class DateTime : public Base {
         public:
             DateTime();
-            DateTime(const string& datetime);
             DateTime(const string& datetime, const TZMap_ptr& tzmap);
-            DateTime(const DateStamp& datestamp, const TZ_ptr& tz);
-            DateTime(seconds_t epochSeconds);
-            DateTime(seconds_t epochSeconds, const TZ_ptr& tz);
+            DateTime(const DateStamp& datestamp, const TZ_ptr tz);
+            DateTime(seconds_t epochSeconds, const TZ_ptr tz);
+            DateTime(EpochTime epochtime, const TZ_ptr tz);
             DateTime(const DateTime&) = default;
-            DateTime(const Date& date, const Time& time, const TZ_ptr& tz);
+            DateTime(const Date& date, const Time& time, const TZ_ptr tz);
 
             void str(ostream& out) const;
             String format(string format) const;
@@ -34,9 +35,10 @@ namespace uICAL {
             bool valid() const;
 
             DateStamp datestamp() const;
-            DateStamp datestamp(const TZ_ptr& tz) const;
+            DateStamp datestamp(const TZ_ptr tz) const;
             Date date() const;
             Time time() const;
+            DateTime shift_timezone(const TZ_ptr tz) const;
 
             enum class Day {
                 NONE, MON, TUE, WED, THU, FRI, SAT, SUN
@@ -62,7 +64,7 @@ namespace uICAL {
 
         protected:
             void construct(const string& datetime, const TZMap_ptr& tzmap);
-            void construct(const DateStamp& ds, const TZ_ptr& tz);
+            void construct(const DateStamp& ds, const TZ_ptr tz);
             void assert_awareness(const DateTime& other) const;
     };
 

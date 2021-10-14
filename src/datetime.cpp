@@ -16,32 +16,30 @@
 
 namespace uICAL {
     DateTime::DateTime() {
-        this->tz = TZ::undef();
+        this->epochtime = EpochTime(0);
+        this->tz = tz_unaware;
     }
 
-    DateTime::DateTime(const DateStamp& ds, const TZ_ptr& tz) {
+    DateTime::DateTime(const DateStamp& ds, const TZ_ptr tz) {
         this->construct(ds, tz);
-    }
-
-    DateTime::DateTime(const string& datetime) {
-        this->construct(datetime, new_ptr<TZMap>());
     }
 
     DateTime::DateTime(const string& datetime, const TZMap_ptr& tzmap) {
         this->construct(datetime, tzmap);
     }
 
-    DateTime::DateTime(seconds_t epochSeconds) {
-        this->epochtime = EpochTime(epochSeconds);
-        this->tz = new_ptr<TZ>("Z");
-    }
-
-    DateTime::DateTime(seconds_t epochSeconds, const TZ_ptr& tz) {
+    DateTime::DateTime(seconds_t epochSeconds, const TZ_ptr tz) {
         this->epochtime = EpochTime(epochSeconds);
         this->tz = tz;
     }
 
-    DateTime::DateTime(const Date& date, const Time& time, const TZ_ptr& tz) {
+    DateTime::DateTime(EpochTime epochtime, const TZ_ptr tz) {
+        this->epochtime = epochtime;
+        this->tz = tz;
+    }
+
+
+    DateTime::DateTime(const Date& date, const Time& time, const TZ_ptr tz) {
         this->epochtime = EpochTime(
             date.year, date.month, date.day, time.hour, time.minute, time.second,
             tz
@@ -54,18 +52,20 @@ namespace uICAL {
             throw ValueError(string("Bad datetime: \"") + datetime + "\"");
 
         DateStamp ds(datetime.substr(0, 15));
+        TZ_ptr tz;
 
         if (datetime.length() > 15) {
-            this->tz = new_ptr<TZ>(datetime.substr(15), tzmap);
+            string tz_name = datetime.substr(15);
+            tz = tzmap->getTZ(tz_name);
         }
         else {
-            this->tz = TZ::unaware();
+            tz = tz_unaware;
         }
 
         this->construct(ds, tz);
     }
 
-    void DateTime::construct(const DateStamp& ds, const TZ_ptr& tz) {
+    void DateTime::construct(const DateStamp& ds, const TZ_ptr tz) {
         this->epochtime = EpochTime(
             ds.year, ds.month, ds.day, ds.hour, ds.minute, ds.second,
             tz
@@ -86,7 +86,7 @@ namespace uICAL {
         );
     }
 
-    DateStamp DateTime::datestamp(const TZ_ptr& tz) const {
+    DateStamp DateTime::datestamp(const TZ_ptr tz) const {
         auto ymdhms = this->epochtime.ymdhms(tz);
 
         return DateStamp(
@@ -94,6 +94,11 @@ namespace uICAL {
             std::get<3>(ymdhms), std::get<4>(ymdhms), std::get<5>(ymdhms)
         );
     }
+
+    DateTime DateTime::shift_timezone(const TZ_ptr tz) const {
+        return DateTime(this->epochtime, tz);
+    }
+
 
     Date DateTime::date() const { return Date(*this); };
     Time DateTime::time() const { return Time(*this); };
@@ -163,7 +168,7 @@ namespace uICAL {
     }
 
     String DateTime::format(string format) const {
-        const time_t secs = this->epochtime.epochSeconds;
+        const time_t secs = this->tz->fromUTC(this->epochtime.epochSeconds);
         const struct tm time = *gmtime(&secs);
         char buffer[64];
         strftime(buffer, 64, format.c_str(), &time);

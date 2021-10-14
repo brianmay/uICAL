@@ -12,6 +12,8 @@
     #include <istream>
 #endif
 
+#include <vector>
+
 namespace uICAL {
     class string;
 

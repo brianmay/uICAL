@@ -51,6 +51,6 @@ namespace uICAL {
     void CalendarEntry::str(ostream& out) const {
         out << "Calendar " << this->asString(this->_type) << ": " << this->_summary << uICAL::endl;
         out << " - start: " << this->_start << uICAL::endl;
-        out << " - span: " << this->_end << uICAL::endl;
+        out << " - end: " << this->_end << uICAL::endl;
     }
 }
