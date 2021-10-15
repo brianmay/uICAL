@@ -143,6 +143,11 @@ namespace uICAL {
         return this->epochtime < other.epochtime;
     }
 
+    bool DateTime::operator >= (const DateTime& other) const {
+        this->assert_awareness(other);
+        return this->epochtime >= other.epochtime;
+    }
+
     bool DateTime::operator <= (const DateTime& other) const {
         this->assert_awareness(other);
         return this->epochtime <= other.epochtime;

@@ -50,6 +50,7 @@ namespace uICAL {
 
             bool operator > (const DateStamp& ds) const;
             bool operator < (const DateStamp& ds) const;
+            bool operator >= (const DateStamp& ds) const;
             bool operator <= (const DateStamp& ds) const;
             bool operator == (const DateStamp& ds) const;
             bool operator != (const DateStamp& ds) const;

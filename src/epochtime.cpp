@@ -58,6 +58,10 @@ namespace uICAL {
         return this->epochSeconds < other.epochSeconds;
     }
 
+    bool EpochTime::operator >= (const EpochTime& other) const {
+        return this->epochSeconds >= other.epochSeconds;
+    }
+
     bool EpochTime::operator <= (const EpochTime& other) const {
         return this->epochSeconds <= other.epochSeconds;
     }

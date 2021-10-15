@@ -103,6 +103,10 @@ namespace uICAL {
         return this->index() < ds.index();
     }
 
+    bool DateStamp::operator >= (const DateStamp& ds) const {
+        return this->index() >= ds.index();
+    }
+
     bool DateStamp::operator <= (const DateStamp& ds) const {
         return this->index() <= ds.index();
     }

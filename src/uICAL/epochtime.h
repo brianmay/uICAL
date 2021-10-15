@@ -27,6 +27,7 @@ namespace uICAL {
 
             bool operator > (const EpochTime& other) const;
             bool operator < (const EpochTime& other) const;
+            bool operator >= (const EpochTime& other) const;
             bool operator <= (const EpochTime& other) const;
             bool operator == (const EpochTime& other) const;
             bool operator != (const EpochTime& other) const;
