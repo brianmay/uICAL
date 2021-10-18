@@ -23,6 +23,9 @@ namespace uICAL {
             RRule_ptr rrule;
             bool start_has_time;
             bool end_has_time;
+            string uid;
+            DateTime recurrence;
+            bool recurrence_has_time;
 
             friend class VEventIter;
     };

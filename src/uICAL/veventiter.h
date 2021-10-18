@@ -17,6 +17,7 @@ namespace uICAL {
 
             bool next();
             DateTime now() const;
+            VEvent_ptr event() const;
             CalendarEntry_ptr entry() const;
 
             friend bool operator < (const VEventIter_ptr& a, const VEventIter_ptr& b);

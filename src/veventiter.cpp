@@ -38,6 +38,10 @@ namespace uICAL {
         return this->rrule->now();
     }
 
+    VEvent_ptr VEventIter::event() const {
+        return this->ice;
+    }
+
     CalendarEntry_ptr VEventIter::entry() const {
         DatePeriod span = this->ice->end - this->ice->start;
         DateTime end = this->rrule->now() + span;

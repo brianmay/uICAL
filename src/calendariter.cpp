@@ -35,19 +35,47 @@ namespace uICAL {
         }
     }
 
-    bool CalendarIter::next() {
+    bool CalendarIter::next_unchecked() {
         if (this->events.size() == 0) {
             return false;
         }
 
         auto minIt = std::min_element(this->events.begin(), this->events.end());
 
+        this->currentEvent = (*minIt)->event();
         this->currentEntry = (*minIt)->entry();
 
         if (! (*minIt)->next()) {
             this->events.erase(minIt);
         }
         return true;
+    }
+
+    bool CalendarIter::next() {
+        bool got_result = false;
+        while (true) {
+            got_result = next_unchecked();
+            if (!got_result) {
+                break;
+            }
+            VEvent_ptr event = this->currentEvent;
+            CalendarEntry_ptr entry = this->currentEntry;
+            CalendarIter::recurence_id_t recurence_id = std::make_tuple(event->uid, entry->start());
+            // If we already have seen this event, don't add it again
+            if (this->recurence_id_set.count(recurence_id) == 0) {
+                break;
+            }
+        }
+        if (got_result) {
+            VEvent_ptr event = this->currentEvent;
+            Serial.println(event->as_str());
+            if (event != nullptr && event->recurrence.valid()) {
+                // If this is an instance of a reoccuring event, mark it so we don't process it twice
+                CalendarIter::recurence_id_t recurence_id = std::make_tuple(event->uid, event->recurrence);
+                this->recurence_id_set.insert(recurence_id);
+            }
+        }
+        return got_result;
     }
 
     CalendarEntry_ptr CalendarIter::current() const {

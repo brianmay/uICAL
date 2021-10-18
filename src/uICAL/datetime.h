@@ -71,4 +71,15 @@ namespace uICAL {
 
     ostream& operator << (ostream& out, const DateTime::Day& day);
 }
+
+namespace std {
+    template <>
+    struct hash<uICAL::DateTime>
+    {
+        size_t operator()(const uICAL::DateTime& k) const
+        {
+            return k.epochtime.epochSeconds;
+        }
+    };
+}
 #endif

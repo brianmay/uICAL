@@ -37,6 +37,8 @@ namespace uICAL {
         VLine_ptr rRule = obj->getPropertyByName("RRULE");
         VLine_ptr summary = obj->getPropertyByName("SUMMARY");
         VLine_ptr location = obj->getPropertyByName("LOCATION");
+        VLine_ptr uid = obj->getPropertyByName("UID");
+        VLine_ptr recurrence = obj->getPropertyByName("RECURRENCE-ID");
 
         this->start = parse_datetime(*dtStart, tzmap, this->start_has_time);
         this->end = parse_datetime(*dtEnd, tzmap, this->end_has_time);
@@ -53,12 +55,22 @@ namespace uICAL {
         } else {
             this->rrule = new_ptr<RRule>(String(""), this->start);
         }
+
+        if (uid != nullptr) {
+            this->uid = uid->value;
+        }
+
+        if (recurrence != nullptr) {
+            this->recurrence = parse_datetime(*recurrence, tzmap, this->recurrence_has_time);
+        }
     }
 
     void VEvent::str(ostream& out) const {
         out << "VEVENT: " << this->summary << uICAL::endl;
         out << " - start: " << this->start << uICAL::endl;
         out << " - end: " << this->end << uICAL::endl;
+        out << " - uid: " << this->uid << uICAL::endl;
+        out << " - recurrence: " << this->recurrence << uICAL::endl;
         out << " - rrule: " << this->rrule << uICAL::endl;
     }
 

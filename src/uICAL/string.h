@@ -100,4 +100,21 @@ namespace uICAL {
 
     #endif
 }
+
+
+#ifdef ARDUINO
+namespace std
+{
+    template <>
+    struct hash<String>
+    {
+        size_t operator()(const String& str) const
+        {
+            // FIXME
+            return 10;
+        }
+    };
+}
+#endif
+
 #endif
