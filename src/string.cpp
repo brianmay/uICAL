@@ -68,5 +68,13 @@ namespace uICAL {
             }).base(), this->end());
         }
 
+        void string::replace_all(const string& from, const string& to) {
+            long start_pos = 0;
+            while((start_pos = this->find(from, start_pos)) != std::string::npos) {
+                this->replace(start_pos, from.length(), to);
+                start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+            }
+        }
+
     #endif
 }

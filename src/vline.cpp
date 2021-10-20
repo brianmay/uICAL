@@ -31,10 +31,10 @@ namespace uICAL {
             this->name = line.substr(0, colon);
         }
         this->value = line.substr(colon + 1, line.length() - colon - 1);
-        this->value.replace("\\N", "\n");
-        this->value.replace("\\\\", "\\");
-        this->value.replace("\\,", ",");
-        this->value.replace("\\;", ";");
+        this->value.replace_all("\\N", "\n");
+        this->value.replace_all("\\\\", "\\");
+        this->value.replace_all("\\,", ",");
+        this->value.replace_all("\\;", ";");
     }
 
     string VLine::getParam(const string& key) const {

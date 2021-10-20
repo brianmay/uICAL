@@ -75,19 +75,20 @@ void test_basic(std::string dtstart, std::string rrule, std::string begin, std::
     uICAL::VLine_ptr ldtstart = uICAL::new_ptr<uICAL::VLine>(dtstart);
     uICAL::VLine_ptr lrrule = uICAL::new_ptr<uICAL::VLine>(rrule);
 
-    uICAL::DateTime start = uICAL::DateTime(ldtstart->value);
+    uICAL::TZMap_ptr tzmap = uICAL::new_ptr<uICAL::TZMap>();
+    uICAL::DateTime start = uICAL::DateTime(ldtstart->value, tzmap);
 
     std::string res;
     try {
         uICAL::DateTime rrBegin;
         if (!begin.empty()) {
-            rrBegin = uICAL::DateTime(begin);
+            rrBegin = uICAL::DateTime(begin, tzmap);
         }
 
         uICAL::RRule_ptr rr = uICAL::new_ptr<uICAL::RRule>(lrrule->value, start);
         for (std::string exclude : excludes) {
             uICAL::VLine_ptr excl = uICAL::new_ptr<uICAL::VLine>(exclude);
-            rr->exclude(uICAL::DateTime(excl->value));
+            rr->exclude(uICAL::DateTime(excl->value, tzmap));
         }
 
         uICAL::RRuleIter_ptr occ = uICAL::new_ptr<uICAL::RRuleIter>(rr, rrBegin, uICAL::DateTime());
@@ -160,7 +161,7 @@ TEST_CASE("RRule::test2", "[uICAL][RRule]") {
     uICAL::string end("29970902T090000");
 
     auto rr = uICAL::RRuleIter(
-        uICAL::new_ptr<uICAL::RRule>(rrule, uICAL::DateTime(dtstart, uICAL::TZ::unaware())),
+        uICAL::new_ptr<uICAL::RRule>(rrule, uICAL::DateTime(dtstart, uICAL::tz_unaware)),
         uICAL::DateTime(), uICAL::DateTime());
 
     REQUIRE_THROWS_WITH(rr.now(), "RecurrenceError: Not yet initialised, call next() first");
@@ -183,8 +184,9 @@ TEST_CASE("RRule::test2", "[uICAL][RRule]") {
 }
 
 TEST_CASE("RRULE::str", "[uICAL][RRule]") {
+    uICAL::TZMap_ptr tzmap = uICAL::new_ptr<uICAL::TZMap>();
     uICAL::string rule("FREQ=DAILY;COUNT=4");
-    uICAL::string dtstart("19970902T090000");
+    uICAL::DateTime dtstart("19970902T090000", tzmap);
 
     uICAL::RRule_ptr rrule = uICAL::new_ptr<uICAL::RRule>(rule, dtstart);
 
@@ -192,8 +194,9 @@ TEST_CASE("RRULE::str", "[uICAL][RRule]") {
 }
 
 TEST_CASE("RRULE::empty", "[uICAL][RRule]") {
+    uICAL::TZMap_ptr tzmap = uICAL::new_ptr<uICAL::TZMap>();
     uICAL::string rule("");
-    uICAL::string dtstart("19970902T090000");
+    uICAL::DateTime dtstart("19970902T090000", tzmap);
 
     auto rrule = uICAL::RRule(rule, dtstart);
 
@@ -201,8 +204,9 @@ TEST_CASE("RRULE::empty", "[uICAL][RRule]") {
 }
 
 TEST_CASE("RRULE::bad_freq", "[uICAL][RRule]") {
+    uICAL::TZMap_ptr tzmap = uICAL::new_ptr<uICAL::TZMap>();
     uICAL::string rule("FREQ=FORTNIGHTLY");
-    uICAL::string dtstart("19970902T090000");
+    uICAL::DateTime dtstart("19970902T090000", tzmap);
 
     REQUIRE_THROWS_WITH(uICAL::RRule(rule, dtstart), "ParseError: Unknown RRULE:FREQ type: FORTNIGHTLY");
 }
@@ -218,26 +222,28 @@ TEST_CASE("RRULE::bad_freq", "[uICAL][RRule]") {
 // }
 
 TEST_CASE("RRULE::negative_range", "[uICAL][RRule]") {
+    uICAL::TZMap_ptr tzmap = uICAL::new_ptr<uICAL::TZMap>();
     uICAL::string dtstart("19970902T090000");
     uICAL::string begin("19970902T090000");
     uICAL::string end("19970901T090000");
 
     REQUIRE_THROWS_WITH(
-        uICAL::RRuleIter(uICAL::new_ptr<uICAL::RRule>("", uICAL::DateTime(dtstart)),
-                         uICAL::DateTime(begin),
-                         uICAL::DateTime(end)),
+        uICAL::RRuleIter(uICAL::new_ptr<uICAL::RRule>("", uICAL::DateTime(dtstart, tzmap)),
+                         uICAL::DateTime(begin, tzmap),
+                         uICAL::DateTime(end, tzmap)),
         "ValueError: Begin and end describe a negative range"
     );
 }
 
 TEST_CASE("RRULE::negative_end", "[uICAL][RRule]") {
+    uICAL::TZMap_ptr tzmap = uICAL::new_ptr<uICAL::TZMap>();
     uICAL::string dtstart("19970902T090000");
     uICAL::string begin("19970802T090000");
     uICAL::string end("19970901T090000");
 
-    auto rruleIt = uICAL::RRuleIter(uICAL::new_ptr<uICAL::RRule>("", uICAL::DateTime(dtstart)),
-                                    uICAL::DateTime(begin),
-                                    uICAL::DateTime(end));
+    auto rruleIt = uICAL::RRuleIter(uICAL::new_ptr<uICAL::RRule>("", uICAL::DateTime(dtstart, tzmap)),
+                                    uICAL::DateTime(begin, tzmap),
+                                    uICAL::DateTime(end, tzmap));
 
     REQUIRE(rruleIt.next() == false);
 }
@@ -255,13 +261,14 @@ TEST_CASE("RRULE::negative_end", "[uICAL][RRule]") {
 // }
 
 TEST_CASE("RRULE::done_before_begin", "[uICAL][RRule]") {
+    uICAL::TZMap_ptr tzmap = uICAL::new_ptr<uICAL::TZMap>();
     uICAL::string dtstart("19970902T090000");
     uICAL::string begin("19971102T090000");
     uICAL::string end("19971130T090000");
 
     auto rruleIt = uICAL::RRuleIter(uICAL::new_ptr<uICAL::RRule>("FREQ=DAILY;WKST=MO;COUNT=10",
-                                                                 uICAL::DateTime(dtstart)),
-                                    uICAL::DateTime(begin),
-                                    uICAL::DateTime(end));
+                                                                 uICAL::DateTime(dtstart, tzmap)),
+                                    uICAL::DateTime(begin, tzmap),
+                                    uICAL::DateTime(end, tzmap));
     REQUIRE(rruleIt.next() == false);
 }

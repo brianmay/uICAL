@@ -55,7 +55,7 @@ namespace uICAL {
 
             DateTime start_of_day(TZ_ptr tz) const;
 
-            String format(string format) const;
+            string format(string format) const;
 
         protected:
             days_t index() const;

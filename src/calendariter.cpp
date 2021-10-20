@@ -68,7 +68,6 @@ namespace uICAL {
         }
         if (got_result) {
             VEvent_ptr event = this->currentEvent;
-            Serial.println(event->as_str());
             if (event != nullptr && event->recurrence.valid()) {
                 // If this is an instance of a reoccuring event, mark it so we don't process it twice
                 CalendarIter::recurence_id_t recurence_id = std::make_tuple(event->uid, event->recurrence);

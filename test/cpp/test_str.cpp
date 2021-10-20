@@ -38,6 +38,8 @@ static const char* event1 =
     "STATUS:CONFIRMED\n"
     "SUMMARY:Irrigation Beds\n"
     "TRANSP:OPAQUE\n"
+    "UID:uid\n"
+    "RECURRENCE-ID:20190917T103000\n"
     "END:VEVENT\n";
 
 
@@ -63,7 +65,7 @@ TEST_CASE("STR::obj", "[uICAL][STR]") {
         tzmap->add(obj);
     }
 
-    REQUIRE(tzmap->as_str() == "America/New_York : EST : -0500\n");
+    REQUIRE(tzmap->as_str() == "America/New_York : EST : -0500\nZ : Z : +0000\n");
 
     {
         std::stringstream input(event1);
@@ -81,6 +83,8 @@ TEST_CASE("STR::obj", "[uICAL][STR]") {
             "VEVENT: Irrigation Beds\n"
             " - start: 20190917T103000EST\n"
             " - end: 20190917T104000EST\n"
+            " - uid: uid\n"
+            " - recurrence: 20190917T103000\n"
             " - rrule: RRULE:FREQ=MONTHLY;INTERVAL=1;WKST=MO;UNTIL=20201231T215959Z;BYMONTHDAY=17\n"
         );
     }

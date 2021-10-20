@@ -7,8 +7,9 @@
 #include "uICAL.h"
 
 uICAL::DateStamp ds(const std::string& value) {
+    uICAL::TZMap_ptr tzmap = uICAL::new_ptr<uICAL::TZMap>();
     using namespace uICAL;
-    DateTime dt(value);
+    DateTime dt(value, tzmap);
     return dt.datestamp();
 }
 
@@ -121,8 +122,9 @@ static const char* datetime1 = "20191016T102000Z";
 static const char* datetime2 = "20200605T064937Z";
 
 TEST_CASE("DateStamp::str", "[uICAL][DateStamp]") {
-    uICAL::DateTime dt1(datetime1);
-    uICAL::DateTime dt2(datetime2);
+    uICAL::TZMap_ptr tzmap = uICAL::new_ptr<uICAL::TZMap>();
+    uICAL::DateTime dt1(datetime1, tzmap);
+    uICAL::DateTime dt2(datetime2, tzmap);
 
     REQUIRE(dt1.as_str() == datetime1);
 

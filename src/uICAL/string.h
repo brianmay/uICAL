@@ -56,6 +56,7 @@ namespace uICAL {
                 void rtrim();
                 bool readfrom(istream& istm, char delim);
                 void tokenize(char delim, std::function<void (string)> cb) const;
+                void replace_all(const string& from, const string& to) { this->replace(from, to); }
 
             protected:
                 static void throw_implementationError(const char* msg);
@@ -93,6 +94,7 @@ namespace uICAL {
                 void rtrim();
                 bool readfrom(istream& is, char delim);
                 void tokenize(char delim, std::function<void (string)> cb) const;
+                void replace_all(const string& from, const string& to);
 
             protected:
                 static void throw_implementationError(const char* msg);
@@ -101,20 +103,22 @@ namespace uICAL {
     #endif
 }
 
-
-#ifdef ARDUINO
 namespace std
 {
     template <>
-    struct hash<String>
+    struct hash<uICAL::string>
     {
-        size_t operator()(const String& str) const
+        size_t operator()(const uICAL::string& str) const
         {
+            #ifdef ARDUINO
             // FIXME
             return 10;
+            #else
+            // FIXME
+            return 10;
+            #endif
         }
     };
 }
-#endif
 
 #endif

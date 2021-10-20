@@ -17,7 +17,7 @@ namespace uICAL {
             bool next();
             CalendarEntry_ptr current() const;
 
-            using recurence_id_t = std::tuple<String, DateTime>;
+            using recurence_id_t = std::tuple<string, DateTime>;
 
         protected:
             const Calendar_ptr cal;

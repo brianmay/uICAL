@@ -11,7 +11,7 @@
 
 namespace uICAL {
     const TZ_ptr tz_unaware = new_ptr<UnawareTZ>();
-    const TZ_ptr tz_UTC = new_ptr<OffsetTZ>(0);
+    const TZ_ptr tz_UTC = new_ptr<OffsetTZ>("Z", 0);
 
     bool TZ::is_aware() const {
         return true;
@@ -28,14 +28,15 @@ namespace uICAL {
     }
 
     void UnawareTZ::str(ostream& out) const {
-        out << "unaware";
     }
 
-    OffsetTZ::OffsetTZ(int offsetMins) {
+    OffsetTZ::OffsetTZ(const string &name, int offsetMins) {
+        this->name = name;
         this->offsetMins = offsetMins;
     }
 
-    OffsetTZ::OffsetTZ(const string& tz) {
+    OffsetTZ::OffsetTZ(const string &name, const string& tz) {
+        this->name = name;
         this->offsetMins = OffsetTZ::parseOffset(tz);
     }
 
@@ -64,24 +65,19 @@ namespace uICAL {
         throw ValueError("Bad timezone: \"" + tz + "\"");
     }
 
-    void OffsetTZ::offsetAsString(ostream& out, int offsetMins) {
+    void OffsetTZ::output_details(ostream& out) const {
+        int offsetMins = this->offsetMins;
         if (offsetMins != -1) {
-            if (offsetMins == 0) {
-                out << "Z";
+            if (offsetMins < 0) {
+                out << "-";
+                offsetMins *= -1;
             }
             else
             {
-                if (offsetMins < 0) {
-                    out << "-";
-                    offsetMins *= -1;
-                }
-                else
-                {
-                    out << "+";
-                }
-                out << string::fmt(fmt_02d, offsetMins / 60);
-                out << string::fmt(fmt_02d, offsetMins % 60);
+                out << "+";
             }
+            out << string::fmt(fmt_02d, offsetMins / 60);
+            out << string::fmt(fmt_02d, offsetMins % 60);
         }
     }
 
@@ -100,8 +96,6 @@ namespace uICAL {
     }
 
     void OffsetTZ::str(ostream& out) const {
-        if (this->offsetMins == -1)
-            throw ImplementationError("Timezone not defined");
-        OffsetTZ::offsetAsString(out, this->offsetMins);
+        out << this->name;
     }
 }

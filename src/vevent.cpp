@@ -13,13 +13,20 @@
 #include "uICAL/tz.h"
 #include "uICAL/date.h"
 #include "uICAL/time.h"
+#include "uICAL/tzmap.h"
 
 namespace uICAL {
     static DateTime parse_datetime(const VLine &vline, const TZMap_ptr& tzmap, bool &has_time) {
         string value = vline.getParam("VALUE");
         if (value == "" || value == "DATE-TIME") {
             has_time = true;
-            return DateTime(vline.value + vline.getParam("TZID"), tzmap);
+            string tzid = vline.getParam("TZID");
+            if (tzid.empty()) {
+                return DateTime(vline.value, tzmap);
+            } else {
+                TZ_ptr tz = tzmap->getTZ(tzid);
+                return DateTime(vline.value, tz);
+            }
         } else if (value == "DATE") {
             has_time = false;
             Date date(vline.value);
@@ -47,13 +54,13 @@ namespace uICAL {
         if (location != nullptr) {
             this->location = location->value;
         } else {
-            this->location = String("");
+            this->location = string("");
         }
 
         if (rRule != nullptr) {
             this->rrule = new_ptr<RRule>(rRule->value, this->start);
         } else {
-            this->rrule = new_ptr<RRule>(String(""), this->start);
+            this->rrule = new_ptr<RRule>(string(""), this->start);
         }
 
         if (uid != nullptr) {

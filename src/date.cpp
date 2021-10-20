@@ -264,7 +264,7 @@ namespace uICAL {
         this->year += n;
     }
 
-    String Date::format(string format) const {
+    string Date::format(string format) const {
         DateTime datetime = this->start_of_day(tz_unaware);
         return datetime.format(format);
     }

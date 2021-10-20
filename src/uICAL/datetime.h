@@ -22,6 +22,7 @@ namespace uICAL {
         public:
             DateTime();
             DateTime(const string& datetime, const TZMap_ptr& tzmap);
+            DateTime(const string& datetime, const TZ_ptr& tzm);
             DateTime(const DateStamp& datestamp, const TZ_ptr tz);
             DateTime(seconds_t epochSeconds, const TZ_ptr tz);
             DateTime(EpochTime epochtime, const TZ_ptr tz);
@@ -29,7 +30,7 @@ namespace uICAL {
             DateTime(const Date& date, const Time& time, const TZ_ptr tz);
 
             void str(ostream& out) const;
-            String format(string format) const;
+            string format(string format) const;
             dhms_t convert_to_dhms() const;
 
             bool valid() const;
@@ -65,6 +66,7 @@ namespace uICAL {
 
         protected:
             void construct(const string& datetime, const TZMap_ptr& tzmap);
+            void construct(const string& datetime, const TZ_ptr& tz);
             void construct(const DateStamp& ds, const TZ_ptr tz);
             void assert_awareness(const DateTime& other) const;
     };

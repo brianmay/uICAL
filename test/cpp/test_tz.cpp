@@ -17,26 +17,11 @@ TEST_CASE("TZ::test1", "[uICAL][TZ]") {
 
         std::list<uICAL::TZ_ptr> tzList;
 
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("NZDT", tzmap));
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("Pacific/Auckland", tzmap));
+        tzList.push_back(uICAL::new_ptr<uICAL::OffsetTZ>("-1000", "-1000"));
+        tzList.push_back(uICAL::new_ptr<uICAL::OffsetTZ>("+0000", "+0000"));
+        tzList.push_back(uICAL::new_ptr<uICAL::OffsetTZ>("+1000", "+1000"));
 
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("CET", tzmap));
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("Europe/Paris", tzmap));
-
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("EST", tzmap));
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("America/New_York", tzmap));
-
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("CST", tzmap));
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("America/Chicago", tzmap));
-
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("MST", tzmap));
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("America/Phoenix", tzmap));
-
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("PST", tzmap));
-        tzList.push_back(uICAL::new_ptr<uICAL::TZ>("America/Los_Angeles", tzmap));
-
-        auto tz = uICAL::new_ptr<uICAL::TZ>("Z");
-        auto dt = uICAL::DateTime(ds, tz);
+        auto dt = uICAL::DateTime(ds, uICAL::tz_UTC);
 
         auto it = tzList.begin();
         auto next = [&]() {
@@ -48,18 +33,9 @@ TEST_CASE("TZ::test1", "[uICAL][TZ]") {
             return ret;
         };
 
-        REQUIRE(next() == "20191106T055555 NZDT");
-        REQUIRE(next() == "20191106T055555 NZDT");
-        REQUIRE(next() == "20191105T185555 CET");
-        REQUIRE(next() == "20191105T185555 CET");
-        REQUIRE(next() == "20191105T125555 EST");
-        REQUIRE(next() == "20191105T125555 EST");
-        REQUIRE(next() == "20191105T115555 CST");
-        REQUIRE(next() == "20191105T115555 CST");
-        REQUIRE(next() == "20191105T105555 MST");
-        REQUIRE(next() == "20191105T105555 MST");
-        REQUIRE(next() == "20191105T095555 PST");
-        REQUIRE(next() == "20191105T095555 PST");
+        REQUIRE(next() == "20191105T075555 -1000");
+        REQUIRE(next() == "20191105T175555 +0000");
+        REQUIRE(next() == "20191106T035555 +1000");
         REQUIRE(next() == "END");
     }
 }

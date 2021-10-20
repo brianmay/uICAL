@@ -28,6 +28,10 @@ namespace uICAL {
         this->construct(datetime, tzmap);
     }
 
+    DateTime::DateTime(const string& datetime, const TZ_ptr& tz) {
+        this->construct(datetime, tz);
+    }
+
     DateTime::DateTime(seconds_t epochSeconds, const TZ_ptr tz) {
         this->epochtime = EpochTime(epochSeconds);
         this->tz = tz;
@@ -56,12 +60,24 @@ namespace uICAL {
 
         if (datetime.length() > 15) {
             string tz_name = datetime.substr(15);
-            tz = tzmap->getTZ(tz_name);
+            tz = tzmap->get_by_name(tz_name);
         }
         else {
             tz = tz_unaware;
         }
 
+        if (tz == nullptr) {
+            throw ValueError(string("Bad timezone in datetime: \"") + datetime + "\"");
+        }
+
+        this->construct(ds, tz);
+    }
+
+    void DateTime::construct(const string& datetime, const TZ_ptr& tz) {
+        if (datetime.length() != 15)
+            throw ValueError(string("Bad datetime: \"") + datetime + "\"");
+
+        DateStamp ds(datetime);
         this->construct(ds, tz);
     }
 
@@ -172,12 +188,12 @@ namespace uICAL {
         this->tz->str(out);
     }
 
-    String DateTime::format(string format) const {
+    string DateTime::format(string format) const {
         const time_t secs = this->tz->fromUTC(this->epochtime.epochSeconds);
         const struct tm time = *gmtime(&secs);
         char buffer[64];
         strftime(buffer, 64, format.c_str(), &time);
-        String result = buffer;
+        string result = buffer;
         return result;
     }
 

@@ -10,7 +10,7 @@
 
 namespace uICAL {
     TZMap::TZMap() {
-        this->add("Z", "UTC", tz_UTC);
+        this->add("Z", "Z", tz_UTC);
     }
 
     void TZMap::add(const VObject_ptr& timezone) {
@@ -27,7 +27,7 @@ namespace uICAL {
     }
 
     void TZMap::add(const string& id, const string& name, const string& tz) {
-        this->id_attrib_map[id].tz = new_ptr<OffsetTZ>(tz);
+        this->id_attrib_map[id].tz = new_ptr<OffsetTZ>(name, tz);
         this->id_attrib_map[id].name = name;
     }
 
@@ -44,10 +44,19 @@ namespace uICAL {
         return this->id_attrib_map[tzId].name;
     }
 
+    const TZ_ptr TZMap::get_by_name(const string& name) const {
+        for (auto& it : this->id_attrib_map) {
+            if (it.second.name == name) {
+                return it.second.tz;
+            }
+        }
+        return nullptr;
+    }
+
     void TZMap::str(ostream& out) const {
         for (auto i : this->id_attrib_map) {
             out << i.first << " : " << i.second.name << " : ";
-            i.second.tz->str(out);
+            i.second.tz->output_details(out);
             out << uICAL::endl;
         }
     }

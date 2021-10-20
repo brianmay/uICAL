@@ -16,10 +16,10 @@ namespace uICAL {
             void add(const VObject_ptr& timezone);
             void add(const string& id, const string& name, const TZ_ptr tz);
 
-            // string findId(const string& nameOrId) const;
-
             const TZ_ptr getTZ(const string& tzId);
             string getName(const string& tzId);
+
+            const TZ_ptr get_by_name(const string& name) const;
 
             void str(ostream& out) const;
 
