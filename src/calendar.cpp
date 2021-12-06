@@ -57,6 +57,7 @@ namespace uICAL {
                 if (line == "RRULE") return true;
                 if (line == "UID") return true;
                 if (line == "RECURRENCE-ID") return true;
+                if (line == "EXDATE") return true;
             }
             return false;
         };

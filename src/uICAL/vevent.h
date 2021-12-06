@@ -27,6 +27,9 @@ namespace uICAL {
             DateTime recurrence;
             bool recurrence_has_time;
 
+            using exdate_t = std::tuple<DateTime, bool>;
+            std::vector<exdate_t> exdates;
+
             friend class VEventIter;
     };
 }

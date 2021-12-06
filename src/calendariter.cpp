@@ -75,6 +75,11 @@ namespace uICAL {
                 CalendarIter::recurence_id_t recurence_id = std::make_tuple(event->uid, event->recurrence);
                 this->recurence_id_set.insert(recurence_id);
             }
+            for (VEvent::exdate_t & exdate: event->exdates) {
+                DateTime dt = std::get<0>(exdate);
+                CalendarIter::recurence_id_t recurence_id = std::make_tuple(event->uid, dt);
+                this->recurence_id_set.insert(recurence_id);
+            }
         }
         return got_result;
     }

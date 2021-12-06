@@ -70,6 +70,14 @@ namespace uICAL {
         if (recurrence != nullptr) {
             this->recurrence = parse_datetime(*recurrence, tzmap, this->recurrence_has_time);
         }
+
+        auto exdates = obj->getPropertysByName("EXDATE");
+        for (VLine_ptr & exdate: exdates) {
+            bool has_time;
+            DateTime dt = parse_datetime(*exdate, tzmap, has_time);
+            VEvent::exdate_t result = std::make_tuple(dt, has_time);
+            this->exdates.push_back(result);
+        }
     }
 
     void VEvent::str(ostream& out) const {
@@ -79,6 +87,9 @@ namespace uICAL {
         out << " - uid: " << this->uid << uICAL::endl;
         out << " - recurrence: " << this->recurrence << uICAL::endl;
         out << " - rrule: " << this->rrule << uICAL::endl;
+        for (const VEvent::exdate_t & exdate: this->exdates) {
+            out << " - exdate: " << std::get<0>(exdate) << " " << std::get<1>(exdate) << uICAL::endl;
+        }
     }
 
 
