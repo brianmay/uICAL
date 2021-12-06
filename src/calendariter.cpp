@@ -40,11 +40,13 @@ namespace uICAL {
             return false;
         }
 
-        auto minIt = std::min_element(this->events.begin(), this->events.end());
+        // Get the next event
+        auto minIt = this->events.begin();
 
         this->currentEvent = (*minIt)->event();
         this->currentEntry = (*minIt)->entry();
 
+        // Get the next entry within the event
         if (! (*minIt)->next()) {
             this->events.erase(minIt);
         }
