@@ -47,6 +47,7 @@ namespace uICAL {
             bool operator > (const Date& ds) const;
             bool operator < (const Date& ds) const;
             bool operator <= (const Date& ds) const;
+            bool operator >= (const Date& ds) const;
             bool operator == (const Date& ds) const;
             bool operator != (const Date& ds) const;
 

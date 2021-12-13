@@ -101,6 +101,10 @@ namespace uICAL {
         return this->index() <= ds.index();
     }
 
+    bool Date::operator >= (const Date& ds) const {
+        return this->index() >= ds.index();
+    }
+
     bool Date::operator == (const Date& ds) const {
         return this->index() == ds.index();
     }
