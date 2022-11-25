@@ -74,9 +74,12 @@ namespace uICAL
         if (rRule != nullptr)
         {
             this->rrule = new_ptr<RRule>(rRule->value, this->start);
+            this->has_rrule = true;
+        }
         else
         {
             this->rrule = new_ptr<RRule>(string(""), this->start);
+            this->has_rrule = false;
         }
 
         if (uid != nullptr)
