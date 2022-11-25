@@ -4,21 +4,24 @@
 #ifndef uical_base_h
 #define uical_base_h
 
-namespace uICAL {
+namespace uICAL
+{
     class string;
     class ostream;
 
-    class Base {
-        public:
-            virtual ~Base() = default;
-            virtual void str(ostream& stm) const = 0;
-            string as_str() const;
+    class Base
+    {
+    public:
+        virtual ~Base() = default;
+        virtual void str(ostream &stm) const = 0;
+        string as_str() const;
     };
 
-    ostream& operator << (ostream& out, const Base& b);
+    ostream &operator<<(ostream &out, const Base &b);
 
-    template<typename T>
-    ostream& operator << (ostream& out, const std::shared_ptr<T>& b) {
+    template <typename T>
+    ostream &operator<<(ostream &out, const std::shared_ptr<T> &b)
+    {
         b->str(out);
         return out;
     }

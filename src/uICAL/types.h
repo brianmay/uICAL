@@ -7,15 +7,16 @@
 #include "uICAL/stream.h"
 #include "uICAL/string.h"
 
-namespace uICAL {
+namespace uICAL
+{
     using seconds_t = long long int;
 
-    template<typename T, typename... Args> \
+    template <typename T, typename... Args>
     inline std::shared_ptr<T> new_ptr(Args... args) { return std::shared_ptr<T>(new T(args...)); }
 
-    #define UICAL_PTR(T) \
-        class T; \
-        using T##_ptr = std::shared_ptr<T>;
+#define UICAL_PTR(T) \
+    class T;         \
+    using T##_ptr = std::shared_ptr<T>;
 
     UICAL_PTR(Calendar)
     UICAL_PTR(CalendarIter)
@@ -33,6 +34,6 @@ namespace uICAL {
     UICAL_PTR(VLine)
     UICAL_PTR(VObject)
 
-    #undef UICAL_PTR
+#undef UICAL_PTR
 }
 #endif

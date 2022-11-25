@@ -9,51 +9,66 @@
 #include "uICAL/vline.h"
 #include "uICAL/vobject.h"
 
-namespace uICAL {
+namespace uICAL
+{
     VObject::VObject()
-    {}
+    {
+    }
 
-    const string& VObject::getName() const {
+    const string &VObject::getName() const
+    {
         return this->name;
     }
 
-    VLine_ptr VObject::getPropertyByName(const string& name) const {
-        for (auto line : this->lines) {
-            if (line->name == name) {
+    VLine_ptr VObject::getPropertyByName(const string &name) const
+    {
+        for (auto line : this->lines)
+        {
+            if (line->name == name)
+            {
                 return line;
             }
         }
         return nullptr;
     }
 
-    VObject::line_vector VObject::getPropertysByName(const string& name) const {
+    VObject::line_vector VObject::getPropertysByName(const string &name) const
+    {
         VObject::line_vector ret;
-        for (auto line : this->lines) {
-            if (line->name == name) {
+        for (auto line : this->lines)
+        {
+            if (line->name == name)
+            {
                 ret.push_back(line);
             }
         }
         return ret;
     }
 
-    VObject::vector VObject::listObjects(const string& name) const {
+    VObject::vector VObject::listObjects(const string &name) const
+    {
         VObject::vector ret;
-        for (auto child : this->children) {
-            if (child->name == name) {
+        for (auto child : this->children)
+        {
+            if (child->name == name)
+            {
                 ret.push_back(child);
             }
         }
         return ret;
     }
 
-    void VObject::str(ostream& out) const {
+    void VObject::str(ostream &out) const
+    {
         out << "BEGIN:" << this->name << uICAL::endl;
-        for (auto line : this->lines) {
+        for (auto line : this->lines)
+        {
             line->str(out);
             out << uICAL::endl;
         }
 
-        for (auto child : this->children) {
+        for (auto child : this->children)
+        {
             child->str(out);
         }
 

@@ -5,15 +5,18 @@
 #include "uICAL/types.h"
 #include "uICAL/base.h"
 
-namespace uICAL {
+namespace uICAL
+{
 
-    string Base::as_str() const {
+    string Base::as_str() const
+    {
         ostream stm;
         this->str(stm);
         return stm;
     }
 
-    ostream& operator << (ostream& out, const Base& b) {
+    ostream &operator<<(ostream &out, const Base &b)
+    {
         b.str(out);
         return out;
     }

@@ -14,12 +14,13 @@
 #include "uICAL/byandcounter.h"
 #include "uICAL/cascade.h"
 
-namespace uICAL {
-    RRuleIter::RRuleIter(const RRule_ptr rr, const DateTime& begin, const DateTime& end)
-    : rr(rr)
-    , cascade(new_ptr<Cascade>())
+namespace uICAL
+{
+    RRuleIter::RRuleIter(const RRule_ptr rr, const DateTime &begin, const DateTime &end)
+        : rr(rr), cascade(new_ptr<Cascade>())
     {
-        if (begin.valid() && end.valid() && begin > end) {
+        if (begin.valid() && end.valid() && begin > end)
+        {
             throw ValueError("Begin and end describe a negative range");
         }
 
@@ -30,12 +31,15 @@ namespace uICAL {
             this->range_end = end;
     }
 
-    bool RRuleIter::start() {
-        if (this->range_end.valid() && this->rr->dtstart > this->range_end)  {
+    bool RRuleIter::start()
+    {
+        if (this->range_end.valid() && this->rr->dtstart > this->range_end)
+        {
             return false;
         }
 
-        if (this->range_begin.valid() && this->rr->until.valid() && this->rr->until < this->range_begin) {
+        if (this->range_begin.valid() && this->rr->until.valid() && this->rr->until < this->range_begin)
+        {
             return false;
         }
 
@@ -53,15 +57,19 @@ namespace uICAL {
         */
         DateStamp begin = base;
 
-        if (!this->cascade->initCounters(base, begin)) {
+        if (!this->cascade->initCounters(base, begin))
+        {
             return false;
         }
         this->count = this->rr->count;
         this->setCurrentNow();
 
-        if (this->range_begin.valid()) {
-            while (this->now() < this->range_begin) {
-                if (!this->next()) {
+        if (this->range_begin.valid())
+        {
+            while (this->now() < this->range_begin)
+            {
+                if (!this->next())
+                {
                     return false;
                 }
             }
@@ -69,42 +77,54 @@ namespace uICAL {
         return true;
     }
 
-    DateTime RRuleIter::now() const {
-        if (this->count != 0) {
-            if (!this->current_now.valid()) {
+    DateTime RRuleIter::now() const
+    {
+        if (this->count != 0)
+        {
+            if (!this->current_now.valid())
+            {
                 throw ImplementationError("Now is invalid");
             }
             return this->current_now;
         }
-        if (this->cascade->size() == 0) {
+        if (this->cascade->size() == 0)
+        {
             throw RecurrenceError("Not yet initialised, call next() first");
         }
 
         throw RecurrenceError("No more occurrences");
     }
 
-    bool RRuleIter::next() {
-        if (this->cascade->size() == 0) {
+    bool RRuleIter::next()
+    {
+        if (this->cascade->size() == 0)
+        {
             return this->start();
         }
 
-        if (this->count > 0) {
-            this->count --;
+        if (this->count > 0)
+        {
+            this->count--;
         }
-        if (this->count == 0) {
+        if (this->count == 0)
+        {
             return false;
         }
 
-        for (;;) {
-            if (!this->nextExclude()) {
+        for (;;)
+        {
+            if (!this->nextExclude())
+            {
                 return false;
             }
-            if (this->now().valid()) {
+            if (this->now().valid())
+            {
                 break;
             }
         }
 
-        if (this->expired(this->now())) {
+        if (this->expired(this->now()))
+        {
             this->count = 0;
             return false;
         }
@@ -112,27 +132,36 @@ namespace uICAL {
         return true;
     }
 
-    bool RRuleIter::expired(const DateTime& current) const {
-        if (this->rr->until.valid() && current > this->rr->until) {
+    bool RRuleIter::expired(const DateTime &current) const
+    {
+        if (this->rr->until.valid() && current > this->rr->until)
+        {
             return true;
         }
-        if (this->range_end.valid() && current > this->range_end) {
+        if (this->range_end.valid() && current > this->range_end)
+        {
             return true;
         }
         return false;
     }
 
-    bool RRuleIter::nextExclude() {
-        if (!this->nextNow()) {
+    bool RRuleIter::nextExclude()
+    {
+        if (!this->nextNow())
+        {
             return false;
         }
 
-        if (this->rr->excludes.size()) {
-            for (;;) {
-                if (!this->rr->excluded(this->now())) {
+        if (this->rr->excludes.size())
+        {
+            for (;;)
+            {
+                if (!this->rr->excluded(this->now()))
+                {
                     break;
                 }
-                if (!this->nextNow()) {
+                if (!this->nextNow())
+                {
                     return false;
                 }
             }
@@ -141,15 +170,18 @@ namespace uICAL {
         return true;
     }
 
-    bool RRuleIter::nextNow() {
-        if (!this->cascade->next()) {
+    bool RRuleIter::nextNow()
+    {
+        if (!this->cascade->next())
+        {
             return false;
         }
         this->setCurrentNow();
         return true;
     }
 
-    void RRuleIter::setCurrentNow() {
+    void RRuleIter::setCurrentNow()
+    {
         DateStamp now = this->cascade->value();
         this->current_now = DateTime(now, this->rr->dtstart.tz);
     }
@@ -170,7 +202,8 @@ namespace uICAL {
         +----------+--------+--------+-------+-------+------+-------+------+
         ref: https://icalendar.org/iCalendar-RFC-5545/3-3-10-recurrence-rule.html
     */
-    void RRuleIter::setupCounters(const DateStamp& base) {
+    void RRuleIter::setupCounters(const DateStamp &base)
+    {
 
         if (this->rr->freq == RRule::Freq::SECONDLY ||
             this->rr->freq == RRule::Freq::MINUTELY ||
@@ -185,76 +218,106 @@ namespace uICAL {
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
             // |HOURLY  |Limit  |N/A     |Limit    |Limit     |Limit |Limit |Expand  |Expand  |Limit   |
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
-            if (this->rr->byWeekNo.size())  throw ICalError("BYWEEKNO is N/A");
+            if (this->rr->byWeekNo.size())
+                throw ICalError("BYWEEKNO is N/A");
 
             // TODO: BYSETPOS
-            if (this->rr->bySecond.size())  this->cascade->add(BySecondCounter::init(this->rr->bySecond));
+            if (this->rr->bySecond.size())
+                this->cascade->add(BySecondCounter::init(this->rr->bySecond));
             else if (this->rr->freq == RRule::Freq::SECONDLY)
-                                            this->cascade->add(SecondInc::init(this->rr->interval));
+                this->cascade->add(SecondInc::init(this->rr->interval));
 
-            if (this->rr->byMinute.size())  this->cascade->add(ByMinuteCounter::init(this->rr->byMinute));
+            if (this->rr->byMinute.size())
+                this->cascade->add(ByMinuteCounter::init(this->rr->byMinute));
             else if (this->rr->freq == RRule::Freq::MINUTELY)
-                                            this->cascade->add(MinuteInc::init(this->rr->interval));
+                this->cascade->add(MinuteInc::init(this->rr->interval));
 
-            if (this->rr->byHour.size())     this->cascade->add(ByHourCounter::init(this->rr->byHour));
+            if (this->rr->byHour.size())
+                this->cascade->add(ByHourCounter::init(this->rr->byHour));
             else if (this->rr->freq == RRule::Freq::HOURLY)
-                                            this->cascade->add(HourInc::init(this->rr->interval));
+                this->cascade->add(HourInc::init(this->rr->interval));
 
             std::vector<Counter_ptr> andCounters;
-            if (this->rr->byDay.size())      andCounters.push_back(ByWeekDayCounter::init(this->rr->byDay, this->rr));
-            if (this->rr->byMonthDay.size()) andCounters.push_back(ByMonthDayCounter::init(this->rr->byMonthDay));
-            if (this->rr->byYearDay.size())  andCounters.push_back(ByYearDayCounter::init(this->rr->byYearDay));
-            if (andCounters.size())          this->cascade->add(ByAndCounter::init(andCounters));
+            if (this->rr->byDay.size())
+                andCounters.push_back(ByWeekDayCounter::init(this->rr->byDay, this->rr));
+            if (this->rr->byMonthDay.size())
+                andCounters.push_back(ByMonthDayCounter::init(this->rr->byMonthDay));
+            if (this->rr->byYearDay.size())
+                andCounters.push_back(ByYearDayCounter::init(this->rr->byYearDay));
+            if (andCounters.size())
+                this->cascade->add(ByAndCounter::init(andCounters));
 
-            if (this->rr->byMonth.size())    this->cascade->add(ByMonthCounter::init(this->rr->byMonth));
+            if (this->rr->byMonth.size())
+                this->cascade->add(ByMonthCounter::init(this->rr->byMonth));
         }
 
-        else if (this->rr->freq == RRule::Freq::DAILY) {
+        else if (this->rr->freq == RRule::Freq::DAILY)
+        {
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
             // |        |BYMONTH|BYWEEKNO|BYYEARDAY|BYMONTHDAY|BYDAY |BYHOUR|BYMINUTE|BYSECOND|BYSETPOS|
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
             // |DAILY   |Limit  |N/A     |N/A      |Limit     |Limit |Expand|Expand  |Expand  |Limit   |
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
-            if (this->rr->byWeekNo.size())  throw ICalError("BYWEEKNO is N/A");
-            if (this->rr->byYearDay.size()) throw ICalError("BYYEARDAY is N/A");
+            if (this->rr->byWeekNo.size())
+                throw ICalError("BYWEEKNO is N/A");
+            if (this->rr->byYearDay.size())
+                throw ICalError("BYYEARDAY is N/A");
 
-            if (this->rr->bySecond.size())  this->cascade->add(BySecondCounter::init(this->rr->bySecond));
-            if (this->rr->byMinute.size())  this->cascade->add(ByMinuteCounter::init(this->rr->byMinute));
-            if (this->rr->byHour.size())    this->cascade->add(ByHourCounter::init(this->rr->byHour));
+            if (this->rr->bySecond.size())
+                this->cascade->add(BySecondCounter::init(this->rr->bySecond));
+            if (this->rr->byMinute.size())
+                this->cascade->add(ByMinuteCounter::init(this->rr->byMinute));
+            if (this->rr->byHour.size())
+                this->cascade->add(ByHourCounter::init(this->rr->byHour));
 
             std::vector<Counter_ptr> andCounters;
-            if (this->rr->byDay.size())      andCounters.push_back(ByWeekDayCounter::init(this->rr->byDay, this->rr));
-            if (this->rr->byMonthDay.size()) andCounters.push_back(ByMonthDayCounter::init(this->rr->byMonthDay));
-            if (andCounters.size() == 0)     andCounters.push_back(DayInc::init(this->rr->interval));
+            if (this->rr->byDay.size())
+                andCounters.push_back(ByWeekDayCounter::init(this->rr->byDay, this->rr));
+            if (this->rr->byMonthDay.size())
+                andCounters.push_back(ByMonthDayCounter::init(this->rr->byMonthDay));
+            if (andCounters.size() == 0)
+                andCounters.push_back(DayInc::init(this->rr->interval));
             this->cascade->add(BySetPosCounter::init(ByAndCounter::init(andCounters), this->rr->bySetPos));
 
-            if (this->rr->byMonth.size()) {
+            if (this->rr->byMonth.size())
+            {
                 this->cascade->add(ByMonthCounter::init(this->rr->byMonth));
                 this->cascade->add(YearInc::init(1));
             }
         }
 
-        else if (this->rr->freq == RRule::Freq::WEEKLY) {
+        else if (this->rr->freq == RRule::Freq::WEEKLY)
+        {
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
             // |        |BYMONTH|BYWEEKNO|BYYEARDAY|BYMONTHDAY|BYDAY |BYHOUR|BYMINUTE|BYSECOND|BYSETPOS|
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
             // |WEEKLY  |Limit  |N/A     |N/A      |N/A       |Expand|Expand|Expand  |Expand  |Limit   |
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
-            if (this->rr->byWeekNo.size())   throw ICalError("BYWEEKNO is N/A");
-            if (this->rr->byYearDay.size())  throw ICalError("BYYEARDAY is N/A");
-            if (this->rr->byMonthDay.size()) throw ICalError("BYMONTHDAY is N/A");
+            if (this->rr->byWeekNo.size())
+                throw ICalError("BYWEEKNO is N/A");
+            if (this->rr->byYearDay.size())
+                throw ICalError("BYYEARDAY is N/A");
+            if (this->rr->byMonthDay.size())
+                throw ICalError("BYMONTHDAY is N/A");
 
             // TODO: BYSETPOS
-            if (this->rr->bySecond.size())  this->cascade->add(BySecondCounter::init(this->rr->bySecond));
-            if (this->rr->byMinute.size())  this->cascade->add(ByMinuteCounter::init(this->rr->byMinute));
-            if (this->rr->byHour.size())    this->cascade->add(ByHourCounter::init(this->rr->byHour));
+            if (this->rr->bySecond.size())
+                this->cascade->add(BySecondCounter::init(this->rr->bySecond));
+            if (this->rr->byMinute.size())
+                this->cascade->add(ByMinuteCounter::init(this->rr->byMinute));
+            if (this->rr->byHour.size())
+                this->cascade->add(ByHourCounter::init(this->rr->byHour));
 
-            if (this->rr->byDay.size())     this->cascade->add(ByWeekDayCounter::init(this->rr->byDay, this->rr));
-            else                            this->cascade->add(ByWeekDayCounter::init(RRule::Day_pair(0, base.dayOfWeek()), this->rr));
+            if (this->rr->byDay.size())
+                this->cascade->add(ByWeekDayCounter::init(this->rr->byDay, this->rr));
+            else
+                this->cascade->add(ByWeekDayCounter::init(RRule::Day_pair(0, base.dayOfWeek()), this->rr));
 
-            if (this->rr->byMonth.size()) {
+            if (this->rr->byMonth.size())
+            {
                 std::vector<Counter_ptr> andCounters;
-                if (this->rr->interval > 1) {
+                if (this->rr->interval > 1)
+                {
                     throw NotImplementedError("RRULE:FREQ=WEEKLY;INTERVAL>1;BYMONTH=... not implemented");
                     andCounters.push_back(WeekInc::init(this->rr->interval, this->rr->wkst));
                 }
@@ -262,12 +325,14 @@ namespace uICAL {
                 this->cascade->add(ByAndCounter::init(andCounters));
                 this->cascade->add(YearInc::init(1));
             }
-            else {
+            else
+            {
                 this->cascade->add(WeekInc::init(this->rr->interval, this->rr->wkst));
             }
         }
 
-        else if (this->rr->freq == RRule::Freq::MONTHLY) {
+        else if (this->rr->freq == RRule::Freq::MONTHLY)
+        {
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
             // |        |BYMONTH|BYWEEKNO|BYYEARDAY|BYMONTHDAY|BYDAY |BYHOUR|BYMINUTE|BYSECOND|BYSETPOS|
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
@@ -275,39 +340,51 @@ namespace uICAL {
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
             // Note 1: Limit if BYMONTHDAY is present; otherwise, special expand for MONTHLY.
 
-            if (this->rr->byWeekNo.size())  throw ICalError("BYWEEKNO is N/A");
-            if (this->rr->byYearDay.size()) throw ICalError("BYYEARDAY is N/A");
+            if (this->rr->byWeekNo.size())
+                throw ICalError("BYWEEKNO is N/A");
+            if (this->rr->byYearDay.size())
+                throw ICalError("BYYEARDAY is N/A");
 
-            if (this->rr->bySecond.size())  this->cascade->add(BySecondCounter::init(this->rr->bySecond));
-            if (this->rr->byMinute.size())  this->cascade->add(ByMinuteCounter::init(this->rr->byMinute));
-            if (this->rr->byHour.size())    this->cascade->add(ByHourCounter::init(this->rr->byHour));
+            if (this->rr->bySecond.size())
+                this->cascade->add(BySecondCounter::init(this->rr->bySecond));
+            if (this->rr->byMinute.size())
+                this->cascade->add(ByMinuteCounter::init(this->rr->byMinute));
+            if (this->rr->byHour.size())
+                this->cascade->add(ByHourCounter::init(this->rr->byHour));
 
-            if (this->rr->byDay.size()) {
+            if (this->rr->byDay.size())
+            {
                 std::vector<Counter_ptr> andCounters;
                 andCounters.push_back(ByWeekDayCounter::init(this->rr->byDay, this->rr));
 
-                if (this->rr->byMonthDay.size()) {
+                if (this->rr->byMonthDay.size())
+                {
                     // Limit: BYDAY
                     andCounters.push_back(ByMonthDayCounter::init(this->rr->byMonthDay));
                 }
                 this->cascade->add(BySetPosCounter::init(ByAndCounter::init(andCounters), this->rr->bySetPos));
             }
-            else {
-                if (this->rr->byMonthDay.size()) {
+            else
+            {
+                if (this->rr->byMonthDay.size())
+                {
                     this->cascade->add(ByMonthDayCounter::init(this->rr->byMonthDay));
                 }
             }
 
-            if (this->rr->byMonth.size()) {
+            if (this->rr->byMonth.size())
+            {
                 this->cascade->add(ByMonthCounter::init(this->rr->byMonth));
                 this->cascade->add(YearInc::init(1));
             }
-            else {
+            else
+            {
                 this->cascade->add(MonthInc::init(this->rr->interval));
             }
         }
 
-        else if (this->rr->freq == RRule::Freq::YEARLY) {
+        else if (this->rr->freq == RRule::Freq::YEARLY)
+        {
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
             // |        |BYMONTH|BYWEEKNO|BYYEARDAY|BYMONTHDAY|BYDAY |BYHOUR|BYMINUTE|BYSECOND|BYSETPOS|
             // +--------+-------+--------+---------+----------+------+------+--------+--------+--------+
@@ -318,50 +395,72 @@ namespace uICAL {
             //         otherwise, special expand for YEARLY.
 
             // TODO: BYSETPOS
-            if (this->rr->bySecond.size())   this->cascade->add(BySecondCounter::init(this->rr->bySecond));
-            if (this->rr->byMinute.size())   this->cascade->add(ByMinuteCounter::init(this->rr->byMinute));
-            if (this->rr->byHour.size())     this->cascade->add(ByHourCounter::init(this->rr->byHour));
+            if (this->rr->bySecond.size())
+                this->cascade->add(BySecondCounter::init(this->rr->bySecond));
+            if (this->rr->byMinute.size())
+                this->cascade->add(ByMinuteCounter::init(this->rr->byMinute));
+            if (this->rr->byHour.size())
+                this->cascade->add(ByHourCounter::init(this->rr->byHour));
 
-            if (this->rr->byDay.size()) {
+            if (this->rr->byDay.size())
+            {
                 std::vector<Counter_ptr> andCounters;
                 std::vector<Counter_ptr> extraCounters;
                 andCounters.push_back(ByWeekDayCounter::init(this->rr->byDay, this->rr));
 
-                if (this->rr->byYearDay.size()) {
+                if (this->rr->byYearDay.size())
+                {
                     // Limit: BYDAY
                     andCounters.push_back(ByYearDayCounter::init(this->rr->byYearDay));
                 }
-                if (this->rr->byMonthDay.size()) {
+                if (this->rr->byMonthDay.size())
+                {
                     // Limit: BYDAY
                     andCounters.push_back(ByMonthDayCounter::init(this->rr->byMonthDay));
                 }
-                if (this->rr->byWeekNo.size()) {
+                if (this->rr->byWeekNo.size())
+                {
                     // Expand: WEEKLY
                     extraCounters.push_back(ByWeekNoCounter::init(this->rr->byWeekNo));
                 }
-                if (this->rr->byMonth.size()) {
+                if (this->rr->byMonth.size())
+                {
                     // Expand: MONTHLY
                     extraCounters.push_back(ByMonthCounter::init(this->rr->byMonth));
                 }
                 this->cascade->add(ByAndCounter::init(andCounters));
                 this->cascade->add(extraCounters);
-            } else if (this->rr->byYearDay.size()) {
-                if (this->rr->byYearDay.size()) {
+            }
+            else if (this->rr->byYearDay.size())
+            {
+                if (this->rr->byYearDay.size())
+                {
                     this->cascade->add(ByYearDayCounter::init(this->rr->byYearDay));
                 }
-            } else if (this->rr->byWeekNo.size()) {
-                if (this->rr->byWeekNo.size()) {
+            }
+            else if (this->rr->byWeekNo.size())
+            {
+                if (this->rr->byWeekNo.size())
+                {
                     this->cascade->add(ByWeekNoCounter::init(this->rr->byWeekNo));
                 }
-            } else {
-                if (this->rr->byMonthDay.size()) {
+            }
+            else
+            {
+                if (this->rr->byMonthDay.size())
+                {
                     this->cascade->add(ByMonthDayCounter::init(this->rr->byMonthDay));
-                } else {
+                }
+                else
+                {
                     this->cascade->add(ByMonthDayCounter::init(base.day));
                 }
-                if (this->rr->byMonth.size()) {
+                if (this->rr->byMonth.size())
+                {
                     this->cascade->add(ByMonthCounter::init(this->rr->byMonth));
-                } else {
+                }
+                else
+                {
                     this->cascade->add(ByMonthCounter::init(base.month));
                 }
             }
@@ -370,7 +469,8 @@ namespace uICAL {
         }
     }
 
-    void RRuleIter::str(ostream& out) const {
+    void RRuleIter::str(ostream &out) const
+    {
         this->cascade->str(out);
     }
 }

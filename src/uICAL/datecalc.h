@@ -4,7 +4,8 @@
 #ifndef uical_datecalc_h
 #define uical_datecalc_h
 
-namespace uICAL {
+namespace uICAL
+{
     unsigned days_from_civil(int y, unsigned m, unsigned d) noexcept;
     std::tuple<unsigned, unsigned, unsigned> civil_from_days(int z) noexcept;
     bool is_leap(unsigned y) noexcept;

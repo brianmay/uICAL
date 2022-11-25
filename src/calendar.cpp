@@ -15,49 +15,77 @@
 #include "uICAL/vline.h"
 #include "uICAL/vlinestream.h"
 
-namespace uICAL {
-    Calendar_ptr Calendar::load(istream& ical) {
+namespace uICAL
+{
+    Calendar_ptr Calendar::load(istream &ical)
+    {
         TZMap_ptr tzmap = new_ptr<TZMap>();
-        return Calendar::load(ical, tzmap, [](const VEvent&) { return true; });
+        return Calendar::load(ical, tzmap, [](const VEvent &)
+                              { return true; });
     }
 
-    Calendar_ptr Calendar::load(istream& ical, eventP_t addEvent) {
+    Calendar_ptr Calendar::load(istream &ical, eventP_t addEvent)
+    {
         TZMap_ptr tzmap = new_ptr<TZMap>();
         return Calendar::load(ical, tzmap, addEvent);
     }
 
-    Calendar_ptr Calendar::load(istream& ical, TZMap_ptr& tzmap) {
-        return Calendar::load(ical, tzmap, [](const VEvent&) { return true; });
+    Calendar_ptr Calendar::load(istream &ical, TZMap_ptr &tzmap)
+    {
+        return Calendar::load(ical, tzmap, [](const VEvent &)
+                              { return true; });
     }
 
-    Calendar_ptr Calendar::load(istream& ical, TZMap_ptr& tzmap, eventP_t addEvent) {
+    Calendar_ptr Calendar::load(istream &ical, TZMap_ptr &tzmap, eventP_t addEvent)
+    {
         VLineStream lines(ical);
+        log_info("Loading calendar from stream");
 
-        VObjectStream::lineP_t useLine = [](const string parent, const string line) {
-            if (parent == "VCALENDAR") {
-                if (line.empty()) return true;
+        VObjectStream::lineP_t useLine = [](const string parent, const string line)
+        {
+            if (parent == "VCALENDAR")
+            {
+                if (line.empty())
+                    return true;
             }
-            else
-            if (parent == "VTIMEZONE") {
-                if (line.empty()) return true;
-                if (line == "TZID") return true;
+            else if (parent == "VTIMEZONE")
+            {
+                if (line.empty())
+                    return true;
+                if (line == "TZID")
+                    return true;
             }
-            else if (parent == "STANDARD") {
-                if (line.empty()) return true;
-                if (line == "TZOFFSETFROM") return true;
-                if (line == "TZNAME") return true;
+            else if (parent == "STANDARD")
+            {
+                if (line.empty())
+                    return true;
+                if (line == "TZOFFSETFROM")
+                    return true;
+                if (line == "TZNAME")
+                    return true;
             }
-            else if (parent == "VEVENT") {
-                if (line.empty()) return true;
-                if (line == "SUMMARY") return true;
-                if (line == "LOCATION") return true;
-                if (line == "DTSTAMP") return true;
-                if (line == "DTSTART") return true;
-                if (line == "DTEND") return true;
-                if (line == "RRULE") return true;
-                if (line == "UID") return true;
-                if (line == "RECURRENCE-ID") return true;
-                if (line == "EXDATE") return true;
+            else if (parent == "VEVENT")
+            {
+                if (line.empty())
+                    return true;
+                if (line == "SUMMARY")
+                    return true;
+                if (line == "LOCATION")
+                    return true;
+                if (line == "DTSTAMP")
+                    return true;
+                if (line == "DTSTART")
+                    return true;
+                if (line == "DTEND")
+                    return true;
+                if (line == "RRULE")
+                    return true;
+                if (line == "UID")
+                    return true;
+                if (line == "RECURRENCE-ID")
+                    return true;
+                if (line == "EXDATE")
+                    return true;
             }
             return false;
         };
@@ -67,7 +95,8 @@ namespace uICAL {
         {
             VObject_ptr obj = stm.nextObject(false);
 
-            if (obj->getName() != "VCALENDAR") {
+            if (obj->getName() != "VCALENDAR")
+            {
                 log_error("Parse error, did not expect: %s", obj->getName().c_str());
                 throw ParseError(string("Parse error, did not expect: ") + obj->getName().c_str());
             }
@@ -75,20 +104,28 @@ namespace uICAL {
 
         Calendar_ptr cal = new_ptr<Calendar>();
 
-        for (;;) {
+        for (;;)
+        {
             auto child = stm.nextObject(true);
-            if (child == nullptr) {
+            if (child == nullptr)
+            {
                 break;
             }
 
-            if (child->getName() == "VTIMEZONE") {
+            if (child->getName() == "VTIMEZONE")
+            {
                 tzmap->add(child);
             }
-            else if (child->getName() == "VEVENT") {
+            else if (child->getName() == "VEVENT")
+            {
                 VEvent_ptr event = new_ptr<VEvent>(child, tzmap);
-                if (addEvent(*event)) {
+
+                if (addEvent(*event))
+                {
                     cal->addEvent(event);
-                } else {
+                }
+                else
+                {
                     log_debug("Event ignored: %s @ %s", event->summary.c_str(), event->start.as_str().c_str());
                 }
             }
@@ -98,11 +135,13 @@ namespace uICAL {
 
     Calendar::Calendar() {}
 
-    void Calendar::addEvent(const VEvent_ptr& event) {
+    void Calendar::addEvent(const VEvent_ptr &event)
+    {
         this->events.push_back(event);
     }
 
-    void Calendar::str(ostream& out) const {
+    void Calendar::str(ostream &out) const
+    {
         out << "CALENDAR" << uICAL::endl;
     }
 }

@@ -6,20 +6,22 @@
 
 #include "uICAL/base.h"
 
-namespace uICAL {
-    class VLine : public Base {
-        public:
-            VLine(const string& line);
+namespace uICAL
+{
+    class VLine : public Base
+    {
+    public:
+        VLine(const string &line);
 
-            string name;
-            std::map<string, string> params;
-            string value;
-            string getParam(const string& key) const;
+        string name;
+        std::map<string, string> params;
+        string value;
+        string getParam(const string &key) const;
 
-            void str(ostream& out) const;
+        void str(ostream &out) const;
 
-        private:
-            void readParams(const string& str);
+    private:
+        void readParams(const string &str);
     };
 }
 #endif

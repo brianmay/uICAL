@@ -6,33 +6,36 @@
 
 #include "uICAL/base.h"
 
-namespace uICAL {
+namespace uICAL
+{
     class VComponent;
 
-    class TZMap : public Base {
-        public:
-            TZMap();
+    class TZMap : public Base
+    {
+    public:
+        TZMap();
 
-            void add(const VObject_ptr& timezone);
-            void add(const string& id, const string& name, const TZ_ptr tz);
+        void add(const VObject_ptr &timezone);
+        void add(const string &id, const string &name, const TZ_ptr tz);
 
-            const TZ_ptr getTZ(const string& tzId);
-            string getName(const string& tzId);
+        const TZ_ptr getTZ(const string &tzId);
+        string getName(const string &tzId);
 
-            const TZ_ptr get_by_name(const string& name) const;
+        const TZ_ptr get_by_name(const string &name) const;
 
-            void str(ostream& out) const;
+        void str(ostream &out) const;
 
-        protected:
-            void add(const string& id, const string& name, const string& tz);
-            int parseOffset(const string& offset) const;
+    protected:
+        void add(const string &id, const string &name, const string &tz);
+        int parseOffset(const string &offset) const;
 
-            typedef struct {
-                TZ_ptr tz;
-                string name;
-            } attribs_t;
+        typedef struct
+        {
+            TZ_ptr tz;
+            string name;
+        } attribs_t;
 
-            std::map<string, attribs_t> id_attrib_map;
+        std::map<string, attribs_t> id_attrib_map;
     };
 }
 #endif

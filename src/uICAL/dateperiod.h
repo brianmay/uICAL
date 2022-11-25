@@ -6,18 +6,20 @@
 
 #include "uICAL/base.h"
 
-namespace uICAL {
-    class DatePeriod : public Base {
-        public:
-            DatePeriod();
-            DatePeriod(seconds_t span);
+namespace uICAL
+{
+    class DatePeriod : public Base
+    {
+    public:
+        DatePeriod();
+        DatePeriod(seconds_t span);
 
-            seconds_t totalSeconds() const;
+        seconds_t totalSeconds() const;
 
-            void str(ostream& out) const;
+        void str(ostream &out) const;
 
-        protected:
-            seconds_t spanSeconds;
+    protected:
+        seconds_t spanSeconds;
     };
 }
 

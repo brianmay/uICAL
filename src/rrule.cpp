@@ -9,9 +9,10 @@
 #include "uICAL/rrule.h"
 #include "uICAL/tzmap.h"
 
-namespace uICAL {
-    RRule::RRule(const string& rrule, const DateTime& dtstart)
-    : dtstart(dtstart)
+namespace uICAL
+{
+    RRule::RRule(const string &rrule, const DateTime &dtstart)
+        : dtstart(dtstart)
     {
         this->freq = Freq::NONE;
         this->wkst = DateTime::Day::MON;
@@ -26,8 +27,10 @@ namespace uICAL {
         log_trace("%s", this->as_str().c_str());
     }
 
-    void RRule::parseRRule(const string& rrule) {
-        rrule.tokenize(';', [&](const string part){
+    void RRule::parseRRule(const string &rrule)
+    {
+        rrule.tokenize(';', [&](const string part)
+                       {
             size_t equals = part.find("=");
             const string key = part.substr(0, equals);
             const string value = part.substr(equals + 1);
@@ -85,25 +88,27 @@ namespace uICAL {
             }
             else {
                 throw ParseError(string("Unknown RRULE key: ") + key);
-            }
-        });
+            } });
     }
 
-    int RRule::parseInt(const string& value) const {
+    int RRule::parseInt(const string &value) const
+    {
         return value.as_int();
     }
 
-    std::vector<string> RRule::parseArray(const string& value) const {
+    std::vector<string> RRule::parseArray(const string &value) const
+    {
         std::vector<string> array;
-        value.tokenize(',', [&](const string part){
-            array.push_back(part);
-        });
+        value.tokenize(',', [&](const string part)
+                       { array.push_back(part); });
         return array;
     }
 
-    RRule::Day_vector RRule::parseByDay(const string& value) const {
+    RRule::Day_vector RRule::parseByDay(const string &value) const
+    {
         Day_vector array;
-        value.tokenize(',', [&](const string part){
+        value.tokenize(',', [&](const string part)
+                       {
             int index;
             if (part.length() > 2) {
                 index = part.substr(0, part.length() - 2).as_int();
@@ -113,92 +118,125 @@ namespace uICAL {
             }
 
             DateTime::Day day = this->parseDay(part.substr(part.length() - 2, string::npos));
-            array.push_back(Day_pair(index, day));
-        });
+            array.push_back(Day_pair(index, day)); });
         return array;
     }
 
-    DateTime::Day RRule::parseDay(const string& value) const {
-        if (value == "SU") return DateTime::Day::SUN;
-        if (value == "MO") return DateTime::Day::MON;
-        if (value == "TU") return DateTime::Day::TUE;
-        if (value == "WE") return DateTime::Day::WED;
-        if (value == "TH") return DateTime::Day::THU;
-        if (value == "FR") return DateTime::Day::FRI;
-        if (value == "SA") return DateTime::Day::SAT;
+    DateTime::Day RRule::parseDay(const string &value) const
+    {
+        if (value == "SU")
+            return DateTime::Day::SUN;
+        if (value == "MO")
+            return DateTime::Day::MON;
+        if (value == "TU")
+            return DateTime::Day::TUE;
+        if (value == "WE")
+            return DateTime::Day::WED;
+        if (value == "TH")
+            return DateTime::Day::THU;
+        if (value == "FR")
+            return DateTime::Day::FRI;
+        if (value == "SA")
+            return DateTime::Day::SAT;
         throw ParseError(string("Unknown day name: ") + value);
     }
 
-    DateTime RRule::parseDate(const string& value) const {
+    DateTime RRule::parseDate(const string &value) const
+    {
         // This value must be a date or a UTC datetime.
         // FIXME: We should support a date only value.
         return DateTime(value, new_ptr<TZMap>());
     }
 
-    const char* RRule::dayAsString(DateTime::Day day) const {
-        switch(day) {
-            case DateTime::Day::MON:    return "MO";
-            case DateTime::Day::TUE:    return "TU";
-            case DateTime::Day::WED:    return "WE";
-            case DateTime::Day::THU:    return "TH";
-            case DateTime::Day::FRI:    return "FR";
-            case DateTime::Day::SAT:    return "SA";
-            case DateTime::Day::SUN:    return "SU";
-            default:
-                string err("Unknown day index: ");
-                err += (int)day;
-                throw ParseError(err);
+    const char *RRule::dayAsString(DateTime::Day day) const
+    {
+        switch (day)
+        {
+        case DateTime::Day::MON:
+            return "MO";
+        case DateTime::Day::TUE:
+            return "TU";
+        case DateTime::Day::WED:
+            return "WE";
+        case DateTime::Day::THU:
+            return "TH";
+        case DateTime::Day::FRI:
+            return "FR";
+        case DateTime::Day::SAT:
+            return "SA";
+        case DateTime::Day::SUN:
+            return "SU";
+        default:
+            string err("Unknown day index: ");
+            err += (int)day;
+            throw ParseError(err);
         }
     }
 
-    const char* RRule::frequencyAsString(Freq freq) const {
-        switch(freq) {
-            case Freq::SECONDLY:  return "SECONDLY";
-            case Freq::MINUTELY:  return "MINUTELY";
-            case Freq::HOURLY:    return "HOURLY";
-            case Freq::DAILY:     return "DAILY";
-            case Freq::WEEKLY:    return "WEELKY";
-            case Freq::MONTHLY:   return "MONTHLY";
-            case Freq::YEARLY:    return "YEARLY";
-            default:
-                string err("Unknown frequency index: ");
-                err += (int)freq;
-                throw ParseError(err);
+    const char *RRule::frequencyAsString(Freq freq) const
+    {
+        switch (freq)
+        {
+        case Freq::SECONDLY:
+            return "SECONDLY";
+        case Freq::MINUTELY:
+            return "MINUTELY";
+        case Freq::HOURLY:
+            return "HOURLY";
+        case Freq::DAILY:
+            return "DAILY";
+        case Freq::WEEKLY:
+            return "WEELKY";
+        case Freq::MONTHLY:
+            return "MONTHLY";
+        case Freq::YEARLY:
+            return "YEARLY";
+        default:
+            string err("Unknown frequency index: ");
+            err += (int)freq;
+            throw ParseError(err);
         }
     }
 
-    string RRule::intAsString(int value) const {
+    string RRule::intAsString(int value) const
+    {
         ostream out;
         out << value;
         return out;
     }
 
-    void RRule::exclude(const DateTime& exclude) {
+    void RRule::exclude(const DateTime &exclude)
+    {
         this->excludes.push_back(exclude);
     }
 
-    bool RRule::excluded(const DateTime& now) const {
+    bool RRule::excluded(const DateTime &now) const
+    {
         auto it = std::find(this->excludes.begin(), this->excludes.end(), now);
-        if (it == this->excludes.end()) {
+        if (it == this->excludes.end())
+        {
             return false;
         }
         return true;
     }
 
-    void RRule::str(ostream& out) const {
+    void RRule::str(ostream &out) const
+    {
         out << "RRULE:";
 
         Joiner values(';');
 
-        values.out() << "FREQ=" << + this->frequencyAsString(this->freq);
+        values.out() << "FREQ=" << +this->frequencyAsString(this->freq);
         values.next();
 
-        if (this->interval) {
+        if (this->interval)
+        {
             values.out() << "INTERVAL=" << this->intAsString(this->interval);
             values.next();
         }
 
-        if (this->count > 0) {
+        if (this->count > 0)
+        {
             values.out() << "COUNT=" << this->intAsString(this->count);
             values.next();
         }
@@ -206,9 +244,11 @@ namespace uICAL {
         values.out() << "WKST=" << this->dayAsString(this->wkst);
         values.next();
 
-        if (this->byDay.size()) {
+        if (this->byDay.size())
+        {
             Joiner days(',');
-            for (Day_pair id : this->byDay) {
+            for (Day_pair id : this->byDay)
+            {
                 if (id.first)
                     days.out() << id.first;
                 days.out() << this->dayAsString(id.second);
@@ -220,47 +260,56 @@ namespace uICAL {
             values.next();
         }
 
-        if (this->until.valid()) {
+        if (this->until.valid())
+        {
             values.out() << "UNTIL=" << this->until;
             values.next();
         }
 
-        if (this->bySecond.size()) {
+        if (this->bySecond.size())
+        {
             values.out() << "BYSECOND=" << this->bySecond;
             values.next();
         }
 
-        if (this->byMinute.size()) {
+        if (this->byMinute.size())
+        {
             values.out() << "BYMINUTE=" << this->byMinute;
             values.next();
         }
 
-        if (this->byHour.size()) {
+        if (this->byHour.size())
+        {
             values.out() << "BYHOUR=" << this->byHour;
             values.next();
         }
 
-        if (this->byMonthDay.size()) {
+        if (this->byMonthDay.size())
+        {
             values.out() << "BYMONTHDAY=" << this->byMonthDay;
             values.next();
         }
 
-        if (this->byMonth.size()) {
+        if (this->byMonth.size())
+        {
             values.out() << "BYMONTH=" << this->byMonth;
             values.next();
         }
 
-        if (this->byYearDay.size()) {
+        if (this->byYearDay.size())
+        {
             values.out() << "BYYEARDAY=" << this->byYearDay;
             values.next();
         }
 
-        if (this->byWeekNo.size()) {
+        if (this->byWeekNo.size())
+        {
             values.out() << "BYWEEKNO=" << this->byWeekNo;
             values.next();
         }
 
-        if (this->bySetPos.size()) {
+        if (this->bySetPos.size())
+        {
             values.out() << "BYSETPOS=" << this->bySetPos;
             values.next();
         }
@@ -268,7 +317,8 @@ namespace uICAL {
         values.str(out);
     }
 
-    ostream& operator << (ostream& out, const RRule::Day_pair& dp) {
+    ostream &operator<<(ostream &out, const RRule::Day_pair &dp)
+    {
         int idx;
         DateTime::Day day;
         unpack(dp, idx, day);

@@ -10,16 +10,19 @@
 #include "uICAL/vevent.h"
 #include "uICAL/veventiter.h"
 
-namespace uICAL {
+namespace uICAL
+{
     VEventIter::VEventIter(const VEvent_ptr ice, DateTime begin, DateTime end)
-    : ice(ice)
+        : ice(ice)
     {
         this->range_begin = begin;
         this->rrule = new_ptr<RRuleIter>(this->ice->rrule, DateTime(), end);
     }
 
-    bool VEventIter::next() {
-        if (! this->range_begin.valid()) {
+    bool VEventIter::next()
+    {
+        if (!this->range_begin.valid())
+        {
             return this->rrule->next();
         }
         DatePeriod span = this->ice->end - this->ice->start;
@@ -34,27 +37,31 @@ namespace uICAL {
         return false;
     }
 
-    DateTime VEventIter::now() const {
+    DateTime VEventIter::now() const
+    {
         return this->rrule->now();
     }
 
-    VEvent_ptr VEventIter::event() const {
+    VEvent_ptr VEventIter::event() const
+    {
         return this->ice;
     }
 
-    CalendarEntry_ptr VEventIter::entry() const {
+    CalendarEntry_ptr VEventIter::entry() const
+    {
         DatePeriod span = this->ice->end - this->ice->start;
         DateTime end = this->rrule->now() + span;
         return new_ptr<CalendarEntry>(CalendarEntry::Type::EVENT,
-                     this->ice->summary,
-                     this->ice->location,
-                     this->rrule->now(),
-                     this->ice->start_has_time,
-                     end,
-                     this->ice->end_has_time);
+                                      this->ice->summary,
+                                      this->ice->location,
+                                      this->rrule->now(),
+                                      this->ice->start_has_time,
+                                      end,
+                                      this->ice->end_has_time);
     }
 
-    bool operator < (const VEventIter_ptr& a, const VEventIter_ptr& b) {
+    bool operator<(const VEventIter_ptr &a, const VEventIter_ptr &b)
+    {
         return a->rrule->now() < b->rrule->now();
     }
 
